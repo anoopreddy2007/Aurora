@@ -1,1 +1,61 @@
 @import "tailwindcss";
+
+@import "@fontsource/space-grotesk/500.css";
+@import "@fontsource/space-grotesk/600.css";
+@import "@fontsource/space-grotesk/700.css";
+@import "@fontsource-variable/inter";
+
+@theme {
+  --color-background: #07100D;
+  --color-background-secondary: #0B1612;
+  --color-surface: #101C17;
+  --color-elevated: #15231D;
+  --color-border-aurora: #24342D;
+  
+  --color-text-primary: #E7F0EB;
+  --color-text-secondary: #A5B5AD;
+  --color-text-muted: #6D7E75;
+  
+  --color-accent-primary: #52B788;
+  --color-accent-soft: #3F8F6B;
+  --color-accent-teal: #5FA9A0;
+  --color-accent-violet: #8D83B8;
+  
+  --color-warning: #D6A85F;
+  --color-error: #C87575;
+
+  --font-space: "Space Grotesk", sans-serif;
+  --font-inter: "Inter Variable", sans-serif;
+
+  --radius-aurora: 12px;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-family: var(--font-inter);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-space);
+    font-weight: 600;
+  }
+
+  /* Financial numbers utility */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Smooth selection styling */
+  ::selection {
+    background-color: rgba(82, 183, 136, 0.3);
+    color: var(--color-text-primary);
+  }
+}
