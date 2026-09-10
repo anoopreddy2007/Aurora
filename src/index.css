@@ -3,24 +3,34 @@
 @import "@fontsource/space-grotesk/500.css";
 @import "@fontsource/space-grotesk/600.css";
 @import "@fontsource/space-grotesk/700.css";
+
 @import "@fontsource-variable/inter";
 
 @theme {
-  --color-background: #07100D;
-  --color-background-secondary: #0B1612;
-  --color-surface: #101C17;
-  --color-elevated: #15231D;
-  --color-border-aurora: #24342D;
-  
-  --color-text-primary: #E7F0EB;
-  --color-text-secondary: #A5B5AD;
-  --color-text-muted: #6D7E75;
-  
-  --color-accent-primary: #52B788;
-  --color-accent-soft: #3F8F6B;
-  --color-accent-teal: #5FA9A0;
-  --color-accent-violet: #8D83B8;
-  
+  /* Aurora — Figma palette */
+
+  --color-background: #08090A;
+  --color-background-secondary: #0F1012;
+
+  --color-surface: #17181A;
+  --color-elevated: #1B1C1F;
+
+  --color-border-aurora: #292A2E;
+
+  --color-text-primary: #F2F2F3;
+  --color-text-secondary: #A6A7AC;
+  --color-text-muted: #6F7076;
+
+  /* Primary Figma accent */
+  --color-accent-primary: #7C83FF;
+
+  /* Financial positive state */
+  --color-accent-green: #56C7A0;
+
+  /* Supporting chart colors */
+  --color-accent-teal: #72B9AA;
+  --color-accent-violet: #7C83FF;
+
   --color-warning: #D6A85F;
   --color-error: #C87575;
 
@@ -35,7 +45,12 @@
     color-scheme: dark;
   }
 
+  html {
+    background: var(--color-background);
+  }
+
   body {
+    margin: 0;
     background-color: var(--color-background);
     color: var(--color-text-primary);
     font-family: var(--font-inter);
@@ -43,19 +58,30 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
     font-family: var(--font-space);
     font-weight: 600;
   }
 
-  /* Financial numbers utility */
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
 
-  /* Smooth selection styling */
   ::selection {
-    background-color: rgba(82, 183, 136, 0.3);
+    background-color: rgba(124, 131, 255, 0.25);
     color: var(--color-text-primary);
   }
 }
