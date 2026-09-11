@@ -5,11 +5,10 @@ The project combines a polished dark interface, interactive budgeting, financial
 Aurora is intentionally frontend-focused. It does not connect to real banks or use a production backend/database.
 ---
 Live Demo
-> Coming soon — deployment will be completed in Phase 10.
-Live URL: TBD
+
+Live URL: https://aurora-mu-neon.vercel.app/
 ---
-Screenshots
-> Screenshots will be added after the final production deployment.
+
 Planned showcase:
 Landing page
 Interactive budget allocator
