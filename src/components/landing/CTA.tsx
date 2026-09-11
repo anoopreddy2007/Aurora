@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   fadeUp,
   fadeIn,
@@ -79,34 +80,36 @@ export function CTA() {
               variants={fadeUp}
               className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:mt-9 sm:flex-row sm:gap-4"
             >
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                className="group flex h-11 w-full max-w-[220px] items-center justify-center gap-3 rounded-full bg-[#F1F1F2] px-6 text-[10px] font-medium text-[#0B0C0D] transition-colors duration-200 hover:bg-white sm:w-auto sm:max-w-none"
-              >
-                Start using Aurora
-
-                <motion.span
-                  whileHover={{ x: 3 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex shrink-0"
+              <Link to="/signup">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="group flex h-11 w-full max-w-[220px] items-center justify-center gap-3 rounded-full bg-[#F1F1F2] px-6 text-[10px] font-medium text-[#0B0C0D] transition-colors duration-200 hover:bg-white sm:w-auto sm:max-w-none"
                 >
-                  <ArrowRight
-                    size={14}
-                    strokeWidth={1.8}
-                  />
-                </motion.span>
-              </motion.button>
+                  Start using Aurora
 
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex h-11 w-full max-w-[220px] items-center justify-center rounded-full border border-[#34373D] bg-[#17181B] px-6 text-[10px] font-medium text-[#A7ABB4] transition-colors duration-200 hover:border-[#4A4D54] hover:text-[#F1F1F2] sm:w-auto sm:max-w-none"
-              >
-                Try the live demo
-              </motion.button>
+                  <motion.span
+                    whileHover={{ x: 3 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex shrink-0"
+                  >
+                    <ArrowRight
+                      size={14}
+                      strokeWidth={1.8}
+                    />
+                  </motion.span>
+                </motion.div>
+              </Link>
+
+              <a href="#allocator">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="flex h-11 w-full max-w-[220px] items-center justify-center rounded-full border border-[#34373D] bg-[#17181B] px-6 text-[10px] font-medium text-[#A7ABB4] transition-colors duration-200 hover:border-[#4A4D54] hover:text-[#F1F1F2] sm:w-auto sm:max-w-none"
+                >
+                  Try the live demo
+                </motion.div>
+              </a>
             </motion.div>
 
             {/* FREE */}

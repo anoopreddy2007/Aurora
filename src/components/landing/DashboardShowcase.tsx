@@ -1,13 +1,28 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import {
-  fadeUp,
-  staggerContainer,
-  viewportOnce,
-  springTransition,
-} from "../../lib/motion";
+  ArrowDownRight,
+  ArrowUpRight,
+  CheckCircle2,
+  ChevronRight,
+  CircleDollarSign,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 
-type DashboardTab = "Overview" | "Spending" | "Budget" | "Goals";
+import { useFinance } from "../../context/FinanceContext";
+import {
+  formatCurrency,
+  type BudgetBucket,
+} from "../../data/finance";
+
+type DashboardTab =
+  | "Overview"
+  | "Spending"
+  | "Budget"
+  | "Goals";
 
 const tabs: DashboardTab[] = [
   "Overview",
@@ -16,957 +31,1139 @@ const tabs: DashboardTab[] = [
   "Goals",
 ];
 
-const transactions = [
-  {
-    name: "Rent",
-    category: "Housing",
-    amount: "₹18,000",
-  },
-  {
-    name: "Swiggy",
-    category: "Food",
-    amount: "₹420",
-  },
-  {
-    name: "Spotify",
-    category: "Subscriptions",
-    amount: "₹119",
-  },
-  {
-    name: "Uber",
-    category: "Transport",
-    amount: "₹280",
-  },
-];
+const bucketColors: Record<
+  BudgetBucket,
+  string
+> = {
+  needs: "#52B788",
+  wants: "#666CC7",
+  savings: "#7C83FF",
+};
 
-const spending = [
-  {
-    label: "Rent",
-    amount: "₹18,000",
-    percentage: 56,
-    color: "#7C83FF",
-  },
-  {
-    label: "Food",
-    amount: "₹7,200",
-    percentage: 22,
-    color: "#7C83FF",
-  },
-  {
-    label: "Fun",
-    amount: "₹4,200",
-    percentage: 13,
-    color: "#7C83FF",
-  },
-  {
-    label: "Other",
-    amount: "₹2,600",
-    percentage: 8,
-    color: "#7C83FF",
-  },
-];
+const bucketLabels: Record<
+  BudgetBucket,
+  string
+> = {
+  needs: "Needs",
+  wants: "Wants",
+  savings: "Savings",
+};
 
-const goals = [
-  {
-    name: "New laptop",
-    current: "₹72,000",
-    target: "₹1,50,000",
-    progress: 48,
-  },
-  {
-    name: "Goa trip",
-    current: "₹18,000",
-    target: "₹30,000",
-    progress: 60,
-  },
-];
+function MetricCard({
+  label,
+  value,
+  detail,
+  icon,
+}: {
+  label: string;
+  value: string;
+  detail?: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.45 }}
+      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#111214] p-4 sm:p-5"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[8px] uppercase tracking-[0.15em] text-[#777B84]">
+          {label}
+        </p>
 
-const chartValues = [
-  42,
-  58,
-  48,
-  76,
-  55,
-  88,
-  68,
-  94,
-  62,
-  78,
-  72,
-  86,
-];
+        <span className="text-[#666CC7]">
+          {icon}
+        </span>
+      </div>
+
+      <p className="mt-4 truncate font-space text-[21px] font-medium tracking-[-0.03em] text-[#F1F1F2] sm:text-[24px]">
+        {value}
+      </p>
+
+      {detail && (
+        <p className="mt-1 truncate text-[8px] text-[#777B84]">
+          {detail}
+        </p>
+      )}
+    </motion.div>
+  );
+}
+
+function SectionCard({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`min-w-0 rounded-[14px] border border-[#292B30] bg-[#111214] ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+function ProgressBar({
+  value,
+  color,
+}: {
+  value: number;
+  color: string;
+}) {
+  return (
+    <div className="h-[5px] w-full overflow-hidden rounded-full bg-[#24262A]">
+      <motion.div
+        initial={{ width: 0 }}
+        whileInView={{
+          width: `${Math.max(
+            0,
+            Math.min(100, value)
+          )}%`,
+        }}
+        viewport={{ once: true }}
+        transition={{
+          duration: 0.8,
+          ease: "easeOut",
+        }}
+        className="h-full rounded-full"
+        style={{ backgroundColor: color }}
+      />
+    </div>
+  );
+}
 
 export function DashboardShowcase() {
   const [activeTab, setActiveTab] =
     useState<DashboardTab>("Overview");
 
+  const {
+    finance,
+    spending,
+    savings,
+    savingsRate,
+    categorySpending,
+    bucketSpending,
+  } = useFinance();
+
+  const {
+    income,
+    transactions,
+    goals,
+    allocation,
+  } = finance;
+
+  const largestCategory = useMemo(
+    () => categorySpending[0],
+    [categorySpending]
+  );
+
+  const previousMonthComparison = useMemo(() => {
+    if (spending === 0) return 0;
+
+    /*
+     * There is currently no previous-month data in the
+     * finance model, so we deliberately avoid inventing
+     * a percentage comparison.
+     */
+    return null;
+  }, [spending]);
+
+  const activeGoals = goals.filter(
+    (goal) => goal.current < goal.target
+  );
+
+  const completedGoals = goals.filter(
+    (goal) => goal.current >= goal.target
+  );
+
+  const averageGoalProgress =
+    goals.length > 0
+      ? goals.reduce(
+          (total, goal) =>
+            total +
+            Math.min(
+              100,
+              (goal.current / Math.max(1, goal.target)) *
+                100
+            ),
+          0
+        ) / goals.length
+      : 0;
+
+  const sortedTransactions = useMemo(
+    () =>
+      [...transactions]
+        .sort(
+          (a, b) =>
+            new Date(b.date).getTime() -
+            new Date(a.date).getTime()
+        )
+        .slice(0, 6),
+    [transactions]
+  );
+
+  const bucketData = (
+    Object.keys(bucketLabels) as BudgetBucket[]
+  ).map((bucket) => ({
+    bucket,
+    label: bucketLabels[bucket],
+    amount: bucketSpending[bucket],
+    percentage:
+      income > 0
+        ? Math.round(
+            (bucketSpending[bucket] / income) *
+              100
+          )
+        : 0,
+    allocation: allocation[bucket],
+    color: bucketColors[bucket],
+  }));
+
+  const getTabDescription = () => {
+    switch (activeTab) {
+      case "Spending":
+        return "See how your spending is distributed.";
+      case "Budget":
+        return "Compare your actual spending with your plan.";
+      case "Goals":
+        return "Track the progress you're making.";
+      default:
+        return "A live view of your money.";
+    }
+  };
+
   return (
     <section
-      id="showcase"
-      className="w-full overflow-hidden border-t border-[#24262A] bg-[#070708]"
+      id="dashboard"
+      className="w-full overflow-hidden border-t border-[#24262A] bg-[#08090A]"
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-8 sm:py-28">
 
-        {/* ================= SECTION HEADING ================= */}
+        {/* HEADER */}
 
         <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          className="w-full max-w-2xl"
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.55 }}
+          className="max-w-[650px]"
         >
-          <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-[#777B84] sm:mb-6">
-            Inside Aurora
+          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#777B84]">
+            Your dashboard
           </p>
 
-          <h2 className="font-space text-[36px] font-medium leading-[1.03] tracking-[-0.045em] text-[#F1F1F2] sm:text-[50px]">
-            Your money,
+          <h2 className="mt-5 font-space text-[36px] font-medium leading-[1.05] tracking-[-0.04em] text-[#F1F1F2] sm:text-[50px]">
+            Everything important,
             <br />
-            at a glance.
+            in one place.
           </h2>
 
-          <p className="mt-6 w-full max-w-[500px] break-words text-[12px] leading-[1.7] text-[#A7ABB4] sm:mt-7 sm:text-sm">
-            One place to understand your balance, spending,
-            budget and progress without digging through
-            spreadsheets.
+          <p className="mt-6 max-w-[500px] text-[12px] leading-[1.8] text-[#777B84] sm:text-[13px]">
+            {getTabDescription()}
           </p>
         </motion.div>
 
-        {/* ================= DASHBOARD ================= */}
+        {/* DASHBOARD */}
 
         <motion.div
-          initial={{ opacity: 0, y: 35, scale: 0.98 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={viewportOnce}
-          transition={{
-            duration: 0.8,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="mt-12 w-full min-w-0 overflow-hidden rounded-[18px] border border-[#292B30] bg-[#17181B] sm:mt-16 sm:rounded-[20px]"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.65, delay: 0.08 }}
+          className="mt-12 min-w-0 overflow-hidden rounded-[20px] border border-[#292B30] bg-[#111214] sm:mt-16"
         >
 
-          {/* ================= DASHBOARD HEADER ================= */}
+          {/* TOP BAR */}
 
-          <div className="flex min-w-0 flex-col gap-4 border-b border-[#292B30] px-4 py-4 sm:gap-5 sm:px-7 sm:py-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex min-w-0 flex-col gap-5 border-b border-[#292B30] px-4 py-4 sm:px-6 sm:py-5 lg:flex-row lg:items-center lg:justify-between">
 
-            <div className="min-w-0">
-              <p className="font-space text-[13px] font-medium text-[#F1F1F2]">
-                Aurora
-              </p>
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] bg-[#17181A]">
+                <Wallet
+                  size={14}
+                  className="text-[#7C83FF]"
+                  strokeWidth={1.8}
+                />
+              </div>
 
-              <p className="mt-1 text-[8px] text-[#777B84]">
-                Personal finance overview
-              </p>
-            </div>
+              <div className="min-w-0">
+                <p className="truncate text-[10px] font-medium text-[#F1F1F2]">
+                  Financial overview
+                </p>
 
-            {/* Tabs */}
-
-            <div className="w-full min-w-0 overflow-x-auto rounded-[9px] border border-[#292B30] bg-[#0F1012] p-1 lg:w-auto">
-              <div className="flex min-w-max items-center gap-1">
-                {tabs.map((tab) => {
-                  const isActive = activeTab === tab;
-
-                  return (
-                    <motion.button
-                      key={tab}
-                      type="button"
-                      onClick={() => setActiveTab(tab)}
-                      whileTap={{ scale: 0.96 }}
-                      transition={springTransition}
-                      className={`whitespace-nowrap rounded-[6px] px-3 py-2 text-[8px] font-medium transition-colors ${
-                        isActive
-                          ? "bg-[#292B30] text-[#F1F1F2]"
-                          : "text-[#777B84] hover:text-[#A7ABB4]"
-                      }`}
-                    >
-                      {tab}
-                    </motion.button>
-                  );
-                })}
+                <p className="mt-1 text-[7px] text-[#55585F]">
+                  Updated from your transactions
+                </p>
               </div>
             </div>
 
+            {/* TABS */}
+
+            <div className="flex max-w-full min-w-0 overflow-x-auto rounded-[9px] border border-[#292B30] bg-[#0F1012] p-1">
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  className={`shrink-0 rounded-[7px] px-3 py-2 text-[8px] font-medium transition-all sm:px-4 ${
+                    activeTab === tab
+                      ? "bg-[#1B1C1F] text-[#F1F1F2]"
+                      : "text-[#777B84] hover:text-[#A7ABB4]"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* ================= DASHBOARD CONTENT ================= */}
+          {/* CONTENT */}
 
-          <div className="min-w-0 p-4 sm:p-7">
+          <div className="min-w-0 p-4 sm:p-6">
 
-            <AnimatePresence mode="wait">
+            {/* OVERVIEW */}
 
-              {/* ================= OVERVIEW ================= */}
+            {activeTab === "Overview" && (
+              <motion.div
+                key="overview"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35 }}
+              >
+                {/* METRICS */}
 
-              {activeTab === "Overview" && (
-                <motion.div
-                  key="overview"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.35 }}
-                  className="min-w-0"
-                >
+                <div className="grid min-w-0 grid-cols-2 gap-3 lg:grid-cols-4">
+                  <MetricCard
+                    label="Monthly income"
+                    value={formatCurrency(income)}
+                    detail="Your current income"
+                    icon={
+                      <CircleDollarSign
+                        size={14}
+                        strokeWidth={1.6}
+                      />
+                    }
+                  />
 
-                  {/* Financial metrics */}
+                  <MetricCard
+                    label="Spent this month"
+                    value={formatCurrency(spending)}
+                    detail={`${transactions.length} transactions`}
+                    icon={
+                      <ArrowDownRight
+                        size={14}
+                        strokeWidth={1.6}
+                      />
+                    }
+                  />
 
-                  <motion.div
-                    variants={staggerContainer}
-                    initial="hidden"
-                    animate="visible"
-                    className="grid min-w-0 gap-3 grid-cols-2 lg:grid-cols-4"
-                  >
-                    <MetricCard
-                      label="Total balance"
-                      value="₹80,000"
-                    />
+                  <MetricCard
+                    label="Savings"
+                    value={formatCurrency(savings)}
+                    detail={`${savingsRate.toFixed(1)}% of income`}
+                    icon={
+                      <TrendingUp
+                        size={14}
+                        strokeWidth={1.6}
+                      />
+                    }
+                  />
 
-                    <MetricCard
-                      label="Monthly income"
-                      value="₹80,000"
-                    />
+                  <MetricCard
+                    label="Remaining"
+                    value={formatCurrency(
+                      Math.max(
+                        0,
+                        income - spending
+                      )
+                    )}
+                    detail="After current spending"
+                    icon={
+                      <Wallet
+                        size={14}
+                        strokeWidth={1.6}
+                      />
+                    }
+                  />
+                </div>
 
-                    <MetricCard
-                      label="Spent this month"
-                      value="₹32,000"
-                    />
+                {/* MIDDLE */}
 
-                    <MetricCard
-                      label="Savings"
-                      value="₹47,600"
-                      accent
-                    />
-                  </motion.div>
+                <div className="mt-3 grid min-w-0 gap-3 lg:grid-cols-[1.35fr_0.65fr]">
 
-                  {/* Main row */}
+                  {/* SPENDING */}
 
-                  <div className="mt-3 grid min-w-0 gap-3 lg:grid-cols-[1.2fr_0.8fr]">
+                  <SectionCard className="p-5 sm:p-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-[8px] uppercase tracking-[0.15em] text-[#777B84]">
+                          Spending overview
+                        </p>
 
-                    {/* Spending overview */}
-
-                    <motion.div
-                      initial={{ opacity: 0, y: 18 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.5,
-                        delay: 0.12,
-                      }}
-                      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-
-                        <div className="min-w-0">
-                          <p className="text-[9px] text-[#777B84]">
-                            Spending overview
-                          </p>
-
-                          <p className="mt-1 font-space text-[13px] font-medium text-[#F1F1F2]">
-                            ₹32,000
-                          </p>
-                        </div>
-
-                        <span className="shrink-0 text-[8px] text-[#777B84]">
-                          This month
-                        </span>
-
+                        <p className="mt-2 font-space text-[21px] font-medium text-[#F1F1F2]">
+                          {formatCurrency(spending)}
+                        </p>
                       </div>
 
-                      {/* Chart */}
-
-                      <div className="mt-6 w-full min-w-0 sm:mt-7">
-
-                        <div className="relative flex h-[150px] min-w-0 items-end gap-1.5 border-b border-[#292B30] px-1 sm:h-[180px] sm:gap-3">
-
-                          {chartValues.map(
-                            (height, index) => (
-                              <div
-                                key={index}
-                                className="flex h-full min-w-0 flex-1 items-end"
-                              >
-                                <motion.div
-                                  initial={{
-                                    height: 0,
-                                    opacity: 0,
-                                  }}
-                                  animate={{
-                                    height: `${height}%`,
-                                    opacity: 1,
-                                  }}
-                                  transition={{
-                                    duration: 0.65,
-                                    delay:
-                                      0.05 +
-                                      index * 0.045,
-                                    ease: [
-                                      0.22,
-                                      1,
-                                      0.36,
-                                      1,
-                                    ],
-                                  }}
-                                  className="w-full rounded-t-[3px]"
-                                  style={{
-                                    minHeight: "8px",
-                                    backgroundColor:
-                                      index === 7
-                                        ? "#8D83B8"
-                                        : "#555B68",
-                                  }}
-                                />
-                              </div>
-                            )
-                          )}
-
-                        </div>
-
-                        {/* Chart labels */}
-
-                        <div className="mt-3 flex justify-between text-[6px] text-[#777B84] sm:text-[7px]">
-                          <span>1 Oct</span>
-                          <span>7 Oct</span>
-                          <span>14 Oct</span>
-                          <span>21 Oct</span>
-                          <span>31 Oct</span>
-                        </div>
-
+                      <div className="flex h-8 w-8 items-center justify-center rounded-[8px] bg-[#17181A]">
+                        <TrendingDown
+                          size={14}
+                          className="text-[#777B84]"
+                        />
                       </div>
-                    </motion.div>
+                    </div>
 
-                    {/* Budget breakdown */}
+                    {/* CATEGORY BARS */}
 
-                    <motion.div
-                      initial={{ opacity: 0, y: 18 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.5,
-                        delay: 0.2,
-                      }}
-                      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-
-                        <div>
-                          <p className="text-[9px] text-[#777B84]">
-                            Budget breakdown
-                          </p>
-
-                          <p className="mt-1 font-space text-[13px] font-medium text-[#F1F1F2]">
-                            ₹80,000
+                    <div className="mt-7 space-y-5">
+                      {categorySpending.length === 0 ? (
+                        <div className="py-8 text-center">
+                          <p className="text-[10px] text-[#777B84]">
+                            No spending data yet.
                           </p>
                         </div>
+                      ) : (
+                        categorySpending
+                          .slice(0, 5)
+                          .map((item, index) => (
+                            <div
+                              key={item.label}
+                            >
+                              <div className="mb-2 flex items-center justify-between gap-3">
+                                <div className="flex min-w-0 items-center gap-2">
+                                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#7C83FF]" />
 
-                        <span className="shrink-0 text-[8px] text-[#777B84]">
-                          Allocated
-                        </span>
+                                  <span className="truncate text-[9px] text-[#A7ABB4]">
+                                    {item.label}
+                                  </span>
+                                </div>
 
-                      </div>
-
-                      <motion.div
-                        variants={staggerContainer}
-                        initial="hidden"
-                        animate="visible"
-                        className="mt-6 space-y-4"
-                      >
-                        {spending.map((item) => (
-                          <motion.div
-                            key={item.label}
-                            variants={fadeUp}
-                          >
-                            <div className="mb-2 flex items-center justify-between gap-3">
-
-                              <div className="flex min-w-0 items-center gap-2">
-
-                                <span
-                                  className="h-1.5 w-1.5 shrink-0 rounded-full"
-                                  style={{
-                                    backgroundColor:
-                                      item.color,
-                                  }}
-                                />
-
-                                <span className="text-[8px] text-[#A7ABB4]">
-                                  {item.label}
+                                <span className="shrink-0 font-space text-[9px] text-[#F1F1F2]">
+                                  {formatCurrency(
+                                    item.amount
+                                  )}
                                 </span>
-
                               </div>
 
-                              <span className="shrink-0 text-[8px] text-[#777B84]">
-                                {item.percentage}%
-                              </span>
-
-                            </div>
-
-                            <div className="h-1 overflow-hidden rounded-full bg-[#25272C]">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{
-                                  width: `${item.percentage}%`,
-                                }}
-                                transition={{
-                                  duration: 0.65,
-                                  ease: "easeOut",
-                                }}
-                                className="h-full rounded-full"
-                                style={{
-                                  backgroundColor:
-                                    item.color,
-                                }}
+                              <ProgressBar
+                                value={
+                                  item.percentage
+                                }
+                                color={
+                                  index === 0
+                                    ? "#7C83FF"
+                                    : "#666CC7"
+                                }
                               />
                             </div>
+                          ))
+                      )}
+                    </div>
+                  </SectionCard>
 
-                          </motion.div>
-                        ))}
-                      </motion.div>
-                    </motion.div>
+                  {/* INSIGHT */}
 
-                  </div>
+                  <SectionCard className="flex min-w-0 flex-col justify-between p-5 sm:p-6">
+                    <div>
+                      <p className="text-[8px] uppercase tracking-[0.15em] text-[#777B84]">
+                        Aurora insight
+                      </p>
 
-                  {/* Bottom row */}
+                      <div className="mt-6 flex h-9 w-9 items-center justify-center rounded-[9px] border border-[#292B30] bg-[#17181A]">
+                        <TrendingUp
+                          size={15}
+                          className="text-[#56C7A0]"
+                        />
+                      </div>
 
-                  <div className="mt-3 grid min-w-0 gap-3 lg:grid-cols-2">
+                      <h3 className="mt-5 font-space text-[18px] leading-[1.2] text-[#F1F1F2]">
+                        {largestCategory
+                          ? `${largestCategory.label} is your largest spending category.`
+                          : "Start adding transactions to see insights."}
+                      </h3>
 
-                    {/* Transactions */}
+                      {largestCategory && (
+                        <p className="mt-4 text-[9px] leading-[1.7] text-[#777B84]">
+                          You have spent{" "}
+                          <span className="text-[#A7ABB4]">
+                            {formatCurrency(
+                              largestCategory.amount
+                            )}
+                          </span>{" "}
+                          on{" "}
+                          {largestCategory.label.toLowerCase()}
+                          , representing{" "}
+                          {largestCategory.percentage}
+                          % of your current spending.
+                        </p>
+                      )}
+                    </div>
 
-                    <motion.div
-                      initial={{ opacity: 0, y: 18 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.5,
-                        delay: 0.28,
-                      }}
-                      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
-                    >
-                      <div className="flex items-center justify-between gap-3">
+                    <div className="mt-8 border-t border-[#292B30] pt-4">
+                      <p className="text-[8px] text-[#55585F]">
+                        {previousMonthComparison === null
+                          ? "Add more monthly data to compare trends."
+                          : "Compared with your previous month."}
+                      </p>
+                    </div>
+                  </SectionCard>
+                </div>
 
-                        <p className="text-[9px] font-medium text-[#F1F1F2]">
+                {/* BOTTOM */}
+
+                <div className="mt-3 grid min-w-0 gap-3 lg:grid-cols-2">
+
+                  {/* TRANSACTIONS */}
+
+                  <SectionCard>
+                    <div className="flex items-center justify-between border-b border-[#292B30] px-5 py-4 sm:px-6">
+                      <div>
+                        <p className="text-[8px] uppercase tracking-[0.15em] text-[#777B84]">
                           Recent transactions
                         </p>
 
-                        <button
-                          type="button"
-                          className="shrink-0 text-[8px] text-[#777B84] hover:text-[#A7ABB4]"
-                        >
-                          View all
-                        </button>
-
+                        <p className="mt-1 text-[9px] text-[#55585F]">
+                          Your latest activity
+                        </p>
                       </div>
 
-                      <div className="mt-4">
-                        {transactions.map(
-                          (transaction, index) => (
-                            <motion.div
-                              key={transaction.name}
-                              initial={{
-                                opacity: 0,
-                                x: -10,
-                              }}
-                              animate={{
-                                opacity: 1,
-                                x: 0,
-                              }}
-                              transition={{
-                                duration: 0.35,
-                                delay:
-                                  0.3 + index * 0.06,
-                              }}
-                              className={`flex items-center justify-between gap-4 py-3 ${
-                                index !==
-                                transactions.length - 1
-                                  ? "border-b border-[#292B30]"
-                                  : ""
-                              }`}
+                      <ArrowUpRight
+                        size={13}
+                        className="text-[#777B84]"
+                      />
+                    </div>
+
+                    <div>
+                      {sortedTransactions.length === 0 ? (
+                        <p className="px-5 py-8 text-center text-[9px] text-[#777B84]">
+                          No transactions yet.
+                        </p>
+                      ) : (
+                        sortedTransactions
+                          .slice(0, 4)
+                          .map((transaction) => (
+                            <div
+                              key={transaction.id}
+                              className="flex min-w-0 items-center gap-3 border-b border-[#292B30] px-5 py-3.5 last:border-b-0 sm:px-6"
                             >
-                              <div className="min-w-0">
-                                <p className="truncate text-[9px] text-[#A7ABB4]">
+                              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] bg-[#17181A]">
+                                <span className="text-[9px] text-[#777B84]">
+                                  {transaction.name
+                                    .charAt(0)
+                                    .toUpperCase()}
+                                </span>
+                              </div>
+
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-[9px] font-medium text-[#F1F1F2]">
                                   {transaction.name}
                                 </p>
 
-                                <p className="mt-0.5 truncate text-[7px] text-[#777B84]">
+                                <p className="mt-1 truncate text-[7px] text-[#55585F]">
                                   {transaction.category}
                                 </p>
                               </div>
 
-                              <span className="shrink-0 font-space text-[9px] text-[#F1F1F2]">
-                                {transaction.amount}
-                              </span>
-                            </motion.div>
-                          )
-                        )}
-                      </div>
-                    </motion.div>
+                              <p className="shrink-0 font-space text-[9px] text-[#F1F1F2]">
+                                {formatCurrency(
+                                  transaction.amount
+                                )}
+                              </p>
+                            </div>
+                          ))
+                      )}
+                    </div>
+                  </SectionCard>
 
-                    {/* Goals */}
+                  {/* GOALS */}
 
-                    <motion.div
-                      initial={{ opacity: 0, y: 18 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.5,
-                        delay: 0.34,
-                      }}
-                      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
-                    >
-                      <div className="flex items-center justify-between gap-3">
-
-                        <p className="text-[9px] font-medium text-[#F1F1F2]">
+                  <SectionCard>
+                    <div className="flex items-center justify-between border-b border-[#292B30] px-5 py-4 sm:px-6">
+                      <div>
+                        <p className="text-[8px] uppercase tracking-[0.15em] text-[#777B84]">
                           Goals
                         </p>
 
-                        <span className="shrink-0 text-[8px] text-[#777B84]">
-                          2 active
-                        </span>
-
+                        <p className="mt-1 text-[9px] text-[#55585F]">
+                          {activeGoals.length} active
+                        </p>
                       </div>
 
-                      <div className="mt-4 space-y-5">
+                      <Target
+                        size={14}
+                        className="text-[#7C83FF]"
+                      />
+                    </div>
 
-                        {goals.map((goal, index) => (
-                          <div key={goal.name}>
+                    <div className="p-5 sm:p-6">
+                      {goals.length === 0 ? (
+                        <div className="py-5 text-center">
+                          <p className="text-[9px] text-[#777B84]">
+                            No goals yet.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-5">
+                          {goals
+                            .slice(0, 3)
+                            .map((goal) => {
+                              const progress =
+                                Math.min(
+                                  100,
+                                  (goal.current /
+                                    Math.max(
+                                      1,
+                                      goal.target
+                                    )) *
+                                    100
+                                );
 
-                            <div className="flex items-center justify-between gap-3">
+                              return (
+                                <div
+                                  key={goal.id}
+                                >
+                                  <div className="flex items-center justify-between gap-3">
+                                    <p className="truncate text-[9px] font-medium text-[#F1F1F2]">
+                                      {goal.name}
+                                    </p>
 
-                              <p className="min-w-0 truncate text-[9px] text-[#A7ABB4]">
-                                {goal.name}
-                              </p>
+                                    <p className="shrink-0 text-[8px] text-[#777B84]">
+                                      {Math.round(
+                                        progress
+                                      )}
+                                      %
+                                    </p>
+                                  </div>
 
-                              <p className="shrink-0 text-[8px] text-[#777B84]">
-                                {goal.progress}%
-                              </p>
+                                  <div className="mt-3">
+                                    <ProgressBar
+                                      value={progress}
+                                      color="#7C83FF"
+                                    />
+                                  </div>
 
-                            </div>
+                                  <div className="mt-2 flex justify-between gap-3">
+                                    <span className="text-[7px] text-[#55585F]">
+                                      {formatCurrency(
+                                        goal.current
+                                      )}
+                                    </span>
 
-                            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#25272C]">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{
-                                  width: `${goal.progress}%`,
-                                }}
-                                transition={{
-                                  duration: 0.7,
-                                  delay:
-                                    0.35 +
-                                    index * 0.1,
-                                  ease: "easeOut",
-                                }}
-                                className="h-full rounded-full"
-                                style={{
-                                  backgroundColor:
-                                    "#52B788",
-                                }}
+                                    <span className="text-[7px] text-[#55585F]">
+                                      {formatCurrency(
+                                        goal.target
+                                      )}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      )}
+                    </div>
+                  </SectionCard>
+                </div>
+              </motion.div>
+            )}
+
+            {/* SPENDING */}
+
+            {activeTab === "Spending" && (
+              <motion.div
+                key="spending"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35 }}
+              >
+                <div className="grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-3">
+                  <MetricCard
+                    label="Total spending"
+                    value={formatCurrency(spending)}
+                    detail={`${transactions.length} transactions`}
+                    icon={
+                      <ArrowDownRight
+                        size={14}
+                      />
+                    }
+                  />
+
+                  <MetricCard
+                    label="Largest category"
+                    value={
+                      largestCategory
+                        ? formatCurrency(
+                            largestCategory.amount
+                          )
+                        : "₹0"
+                    }
+                    detail={
+                      largestCategory?.label ??
+                      "No category yet"
+                    }
+                    icon={
+                      <TrendingDown
+                        size={14}
+                      />
+                    }
+                  />
+
+                  <MetricCard
+                    label="Average transaction"
+                    value={
+                      transactions.length > 0
+                        ? formatCurrency(
+                            spending /
+                              transactions.length
+                          )
+                        : "₹0"
+                    }
+                    detail="Across all transactions"
+                    icon={
+                      <CircleDollarSign
+                        size={14}
+                      />
+                    }
+                  />
+                </div>
+
+                <div className="mt-3 grid min-w-0 gap-3 lg:grid-cols-[1.3fr_0.7fr]">
+
+                  <SectionCard className="p-5 sm:p-6">
+                    <p className="text-[8px] uppercase tracking-[0.15em] text-[#777B84]">
+                      Spending by category
+                    </p>
+
+                    <div className="mt-7 space-y-6">
+                      {categorySpending.length === 0 ? (
+                        <p className="py-8 text-center text-[9px] text-[#777B84]">
+                          Add transactions to see
+                          category spending.
+                        </p>
+                      ) : (
+                        categorySpending.map(
+                          (item, index) => (
+                            <div key={item.label}>
+                              <div className="mb-2.5 flex items-center justify-between gap-3">
+                                <div className="flex min-w-0 items-center gap-2">
+                                  <span
+                                    className="h-2 w-2 shrink-0 rounded-full"
+                                    style={{
+                                      backgroundColor:
+                                        index === 0
+                                          ? "#7C83FF"
+                                          : "#666CC7",
+                                    }}
+                                  />
+
+                                  <span className="truncate text-[9px] text-[#A7ABB4]">
+                                    {item.label}
+                                  </span>
+                                </div>
+
+                                <div className="flex shrink-0 items-center gap-3">
+                                  <span className="font-space text-[9px] text-[#F1F1F2]">
+                                    {formatCurrency(
+                                      item.amount
+                                    )}
+                                  </span>
+
+                                  <span className="w-7 text-right text-[8px] text-[#777B84]">
+                                    {item.percentage}%
+                                  </span>
+                                </div>
+                              </div>
+
+                              <ProgressBar
+                                value={item.percentage}
+                                color={
+                                  index === 0
+                                    ? "#7C83FF"
+                                    : "#666CC7"
+                                }
                               />
                             </div>
+                          )
+                        )
+                      )}
+                    </div>
+                  </SectionCard>
 
-                            <div className="mt-2 flex justify-between text-[7px] text-[#777B84]">
-                              <span>{goal.current}</span>
-                              <span>{goal.target}</span>
-                            </div>
+                  <SectionCard className="p-5 sm:p-6">
+                    <p className="text-[8px] uppercase tracking-[0.15em] text-[#777B84]">
+                      Top category
+                    </p>
 
-                          </div>
-                        ))}
+                    {largestCategory ? (
+                      <>
+                        <p className="mt-6 font-space text-[25px] text-[#F1F1F2]">
+                          {largestCategory.label}
+                        </p>
 
-                      </div>
-                    </motion.div>
+                        <p className="mt-2 font-space text-[18px] text-[#7C83FF]">
+                          {formatCurrency(
+                            largestCategory.amount
+                          )}
+                        </p>
 
+                        <p className="mt-4 text-[9px] leading-[1.7] text-[#777B84]">
+                          {largestCategory.percentage}%
+                          of your total spending is
+                          currently going toward this
+                          category.
+                        </p>
+
+                        <div className="mt-6 border-t border-[#292B30] pt-5">
+                          <p className="text-[8px] text-[#55585F]">
+                            Keep adding transactions to
+                            make this breakdown more
+                            useful.
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="mt-6 text-[9px] leading-[1.7] text-[#777B84]">
+                        Your largest spending category
+                        will appear here once you add a
+                        transaction.
+                      </p>
+                    )}
+                  </SectionCard>
+                </div>
+              </motion.div>
+            )}
+
+            {/* BUDGET */}
+
+            {activeTab === "Budget" && (
+              <motion.div
+                key="budget"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35 }}
+              >
+                <div className="grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-3">
+                  {bucketData.map((item) => (
+                    <MetricCard
+                      key={item.bucket}
+                      label={item.label}
+                      value={formatCurrency(
+                        item.amount
+                      )}
+                      detail={`${item.percentage}% of income`}
+                      icon={
+                        <span
+                          className="block h-2 w-2 rounded-full"
+                          style={{
+                            backgroundColor:
+                              item.color,
+                          }}
+                        />
+                      }
+                    />
+                  ))}
+                </div>
+
+                <SectionCard className="mt-3 p-5 sm:p-6">
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                      <p className="text-[8px] uppercase tracking-[0.15em] text-[#777B84]">
+                        Budget allocation
+                      </p>
+
+                      <p className="mt-2 font-space text-[21px] text-[#F1F1F2]">
+                        {formatCurrency(income)}
+                      </p>
+
+                      <p className="mt-1 text-[8px] text-[#55585F]">
+                        Your planned monthly income
+                      </p>
+                    </div>
+
+                    <div className="text-left sm:text-right">
+                      <p className="text-[8px] text-[#777B84]">
+                        Actual spending
+                      </p>
+
+                      <p className="mt-1 font-space text-[15px] text-[#F1F1F2]">
+                        {formatCurrency(spending)}
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Insight */}
+                  {/* ALLOCATION BAR */}
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.5,
-                      delay: 0.4,
-                    }}
-                    className="mt-3 min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
-                  >
-                    <p className="text-[8px] uppercase tracking-[0.16em] text-[#777B84]">
-                      Aurora insight
-                    </p>
+                  <div className="mt-8 flex h-3 w-full overflow-hidden rounded-full bg-[#24262A]">
+                    {(
+                      Object.keys(
+                        allocation
+                      ) as BudgetBucket[]
+                    ).map((bucket) => (
+                      <motion.div
+                        key={bucket}
+                        initial={{ width: 0 }}
+                        whileInView={{
+                          width: `${allocation[bucket]}%`,
+                        }}
+                        viewport={{
+                          once: true,
+                        }}
+                        transition={{
+                          duration: 0.7,
+                          ease: "easeOut",
+                        }}
+                        style={{
+                          backgroundColor:
+                            bucketColors[bucket],
+                        }}
+                      />
+                    ))}
+                  </div>
 
-                    <p className="mt-2 font-space text-[12px] text-[#F1F1F2]">
-                      Your spending is on track this month.
-                    </p>
-
-                    <p className="mt-1 text-[8px] leading-5 text-[#777B84]">
-                      You're spending less on discretionary
-                      categories while keeping your savings
-                      rate healthy.
-                    </p>
-                  </motion.div>
-
-                </motion.div>
-              )}
-
-              {/* ================= SPENDING TAB ================= */}
-
-              {activeTab === "Spending" && (
-                <motion.div
-                  key="spending"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.35 }}
-                  className="grid min-w-0 gap-3 lg:grid-cols-2"
-                >
-
-                  <div className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-6">
-
-                    <p className="text-[9px] text-[#777B84]">
-                      Monthly spending
-                    </p>
-
-                    <p className="mt-2 font-space text-[27px] text-[#F1F1F2] sm:text-[30px]">
-                      ₹32,000
-                    </p>
-
-                    <p className="mt-1 text-[8px] text-[#52B788]">
-                      8% lower than last month
-                    </p>
-
-                    <div className="mt-7 space-y-5 sm:mt-8">
-                      {spending.map((item, index) => (
-                        <div key={item.label}>
-
-                          <div className="flex items-center justify-between gap-3">
-                            <span className="text-[9px] text-[#A7ABB4]">
-                              {item.label}
-                            </span>
-
-                            <span className="shrink-0 text-[9px] text-[#F1F1F2]">
-                              {item.amount}
-                            </span>
-                          </div>
-
-                          <div className="mt-2 h-2 rounded-full bg-[#25272C]">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              animate={{
-                                width: `${item.percentage}%`,
-                              }}
-                              transition={{
-                                duration: 0.6,
-                                delay: index * 0.08,
-                              }}
-                              className="h-full rounded-full"
+                  <div className="mt-7 grid gap-4 sm:grid-cols-3">
+                    {bucketData.map((item) => (
+                      <div
+                        key={item.bucket}
+                        className="min-w-0"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex min-w-0 items-center gap-2">
+                            <span
+                              className="h-2 w-2 shrink-0 rounded-full"
                               style={{
                                 backgroundColor:
                                   item.color,
                               }}
                             />
+
+                            <span className="truncate text-[9px] text-[#A7ABB4]">
+                              {item.label}
+                            </span>
                           </div>
 
-                        </div>
-                      ))}
-                    </div>
-
-                  </div>
-
-                  <div className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-6">
-
-                    <p className="text-[9px] text-[#777B84]">
-                      Spending insight
-                    </p>
-
-                    <p className="mt-3 font-space text-[16px] leading-6 text-[#F1F1F2] sm:text-[17px]">
-                      Food spending is your second largest
-                      category.
-                    </p>
-
-                    <p className="mt-3 text-[9px] leading-5 text-[#777B84]">
-                      You have spent ₹7,200 this month, which
-                      is 22% of your total spending.
-                    </p>
-
-                    <div className="mt-7 rounded-[10px] border border-[#292B30] bg-[#17181B] p-4">
-
-                      <p className="text-[8px] text-[#777B84]">
-                        Largest category
-                      </p>
-
-                      <p className="mt-1 font-space text-[13px] text-[#F1F1F2]">
-                        Rent · 56%
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                </motion.div>
-              )}
-
-              {/* ================= BUDGET TAB ================= */}
-
-              {activeTab === "Budget" && (
-                <motion.div
-                  key="budget"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.35 }}
-                  className="min-w-0"
-                >
-
-                  <div className="grid min-w-0 gap-3 sm:grid-cols-3">
-
-                    <BudgetSummary
-                      label="Needs"
-                      percentage={56}
-                      amount="₹44,800"
-                      color="#7C83FF"
-                    />
-
-                    <BudgetSummary
-                      label="Wants"
-                      percentage={22}
-                      amount="₹17,600"
-                      color="#7C83FF"
-                    />
-
-                    <BudgetSummary
-                      label="Savings"
-                      percentage={22}
-                      amount="₹17,600"
-                      color="#52B788"
-                    />
-
-                  </div>
-
-                  <div className="mt-3 min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-6">
-
-                    <p className="text-[9px] text-[#777B84]">
-                      Current allocation
-                    </p>
-
-                    <div className="mt-5 flex h-4 min-w-0 overflow-hidden rounded-full bg-[#25272C]">
-
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: "56%" }}
-                        transition={{ duration: 0.6 }}
-                        className="h-full shrink-0"
-                        style={{
-                          backgroundColor: "#7C83FF",
-                        }}
-                      />
-
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: "22%" }}
-                        transition={{
-                          duration: 0.5,
-                          delay: 0.15,
-                        }}
-                        className="h-full shrink-0"
-                        style={{
-                          backgroundColor: "#666CC7",
-                        }}
-                      />
-
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: "22%" }}
-                        transition={{
-                          duration: 0.5,
-                          delay: 0.25,
-                        }}
-                        className="h-full shrink-0"
-                        style={{
-                          backgroundColor: "#52B788",
-                        }}
-                      />
-
-                    </div>
-
-                    <div className="mt-5 grid grid-cols-3 gap-2">
-
-                      <p className="text-[7px] text-[#777B84] sm:text-[8px]">
-                        Needs · 56%
-                      </p>
-
-                      <p className="text-center text-[7px] text-[#777B84] sm:text-[8px]">
-                        Wants · 22%
-                      </p>
-
-                      <p className="text-right text-[7px] text-[#777B84] sm:text-[8px]">
-                        Savings · 22%
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                </motion.div>
-              )}
-
-              {/* ================= GOALS TAB ================= */}
-
-              {activeTab === "Goals" && (
-                <motion.div
-                  key="goals"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.35 }}
-                  className="grid min-w-0 gap-3 lg:grid-cols-2"
-                >
-
-                  {goals.map((goal, index) => (
-                    <motion.div
-                      key={goal.name}
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{
-                        opacity: 1,
-                        y: 0,
-                      }}
-                      transition={{
-                        duration: 0.45,
-                        delay: index * 0.1,
-                      }}
-                      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-6"
-                    >
-
-                      <div className="flex items-start justify-between gap-4">
-
-                        <div className="min-w-0">
-                          <p className="text-[9px] text-[#777B84]">
-                            Goal
-                          </p>
-
-                          <p className="mt-1 truncate font-space text-[16px] text-[#F1F1F2] sm:text-[17px]">
-                            {goal.name}
-                          </p>
+                          <span className="shrink-0 text-[8px] text-[#777B84]">
+                            {item.allocation}%
+                          </span>
                         </div>
 
-                        <span className="shrink-0 font-space text-[12px] text-[#52B788]">
-                          {goal.progress}%
-                        </span>
+                        <p className="mt-2 font-space text-[12px] text-[#F1F1F2]">
+                          {formatCurrency(
+                            item.amount
+                          )}
+                        </p>
 
+                        <p className="mt-1 text-[7px] text-[#55585F]">
+                          Actual spending
+                        </p>
                       </div>
+                    ))}
+                  </div>
+                </SectionCard>
 
-                      <div className="mt-7 h-2 rounded-full bg-[#25272C]">
+                <div className="mt-3 grid min-w-0 gap-3 lg:grid-cols-2">
+                  <SectionCard className="p-5 sm:p-6">
+                    <p className="text-[8px] uppercase tracking-[0.15em] text-[#777B84]">
+                      Savings
+                    </p>
 
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{
-                            width: `${goal.progress}%`,
-                          }}
-                          transition={{
-                            duration: 0.7,
-                            delay:
-                              0.15 + index * 0.1,
-                          }}
-                          className="h-full rounded-full"
-                          style={{
-                            backgroundColor: "#52B788",
-                          }}
-                        />
+                    <p className="mt-4 font-space text-[25px] text-[#56C7A0]">
+                      {formatCurrency(savings)}
+                    </p>
 
-                      </div>
+                    <p className="mt-2 text-[9px] text-[#777B84]">
+                      {savingsRate.toFixed(1)}% of your
+                      income remains after spending.
+                    </p>
+                  </SectionCard>
 
-                      <div className="mt-3 flex justify-between text-[8px] text-[#777B84]">
-                        <span>{goal.current}</span>
-                        <span>{goal.target}</span>
-                      </div>
+                  <SectionCard className="p-5 sm:p-6">
+                    <p className="text-[8px] uppercase tracking-[0.15em] text-[#777B84]">
+                      Remaining budget
+                    </p>
 
-                      <p className="mt-6 text-[8px] leading-5 text-[#777B84]">
-                        Keep your current savings rate and this
-                        goal stays within reach.
+                    <p className="mt-4 font-space text-[25px] text-[#F1F1F2]">
+                      {formatCurrency(
+                        Math.max(
+                          0,
+                          income - spending
+                        )
+                      )}
+                    </p>
+
+                    <p className="mt-2 text-[9px] text-[#777B84]">
+                      Money currently unspent from
+                      your monthly income.
+                    </p>
+                  </SectionCard>
+                </div>
+              </motion.div>
+            )}
+
+            {/* GOALS */}
+
+            {activeTab === "Goals" && (
+              <motion.div
+                key="goals"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35 }}
+              >
+                <div className="grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-3">
+                  <MetricCard
+                    label="Active goals"
+                    value={String(activeGoals.length)}
+                    detail={`${completedGoals.length} completed`}
+                    icon={
+                      <Target size={14} />
+                    }
+                  />
+
+                  <MetricCard
+                    label="Goals"
+                    value={String(goals.length)}
+                    detail="Total goals"
+                    icon={
+                      <CircleDollarSign
+                        size={14}
+                      />
+                    }
+                  />
+
+                  <MetricCard
+                    label="Average progress"
+                    value={`${Math.round(
+                      averageGoalProgress
+                    )}%`}
+                    detail="Across all goals"
+                    icon={
+                      <TrendingUp size={14} />
+                    }
+                  />
+                </div>
+
+                <SectionCard className="mt-3 p-5 sm:p-6">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-[8px] uppercase tracking-[0.15em] text-[#777B84]">
+                        Your goals
                       </p>
 
-                    </motion.div>
-                  ))}
+                      <p className="mt-1 text-[9px] text-[#55585F]">
+                        Progress updates from your saved
+                        goal data
+                      </p>
+                    </div>
 
-                </motion.div>
-              )}
+                    <Target
+                      size={14}
+                      className="text-[#7C83FF]"
+                    />
+                  </div>
 
-            </AnimatePresence>
+                  {goals.length === 0 ? (
+                    <div className="py-14 text-center">
+                      <p className="text-[10px] text-[#777B84]">
+                        No goals yet.
+                      </p>
+
+                      <p className="mt-2 text-[8px] text-[#55585F]">
+                        Add a goal to start tracking
+                        progress.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                      {goals.map((goal) => {
+                        const progress = Math.min(
+                          100,
+                          (goal.current /
+                            Math.max(
+                              1,
+                              goal.target
+                            )) *
+                            100
+                        );
+
+                        const complete =
+                          progress >= 100;
+
+                        return (
+                          <div
+                            key={goal.id}
+                            className="min-w-0 rounded-[12px] border border-[#292B30] bg-[#0F1012] p-4"
+                          >
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="min-w-0">
+                                <p className="truncate text-[10px] font-medium text-[#F1F1F2]">
+                                  {goal.name}
+                                </p>
+
+                                <p className="mt-1 text-[8px] text-[#55585F]">
+                                  {complete
+                                    ? "Goal completed"
+                                    : "In progress"}
+                                </p>
+                              </div>
+
+                              {complete ? (
+                                <CheckCircle2
+                                  size={15}
+                                  className="shrink-0 text-[#56C7A0]"
+                                />
+                              ) : (
+                                <span className="shrink-0 font-space text-[10px] text-[#7C83FF]">
+                                  {Math.round(
+                                    progress
+                                  )}
+                                  %
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="mt-5">
+                              <ProgressBar
+                                value={progress}
+                                color={
+                                  complete
+                                    ? "#56C7A0"
+                                    : "#7C83FF"
+                                }
+                              />
+                            </div>
+
+                            <div className="mt-3 flex items-center justify-between gap-3">
+                              <span className="truncate text-[8px] text-[#777B84]">
+                                {formatCurrency(
+                                  goal.current
+                                )}
+                              </span>
+
+                              <ChevronRight
+                                size={12}
+                                className="shrink-0 text-[#55585F]"
+                              />
+
+                              <span className="truncate text-right text-[8px] text-[#777B84]">
+                                {formatCurrency(
+                                  goal.target
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </SectionCard>
+              </motion.div>
+            )}
 
           </div>
         </motion.div>
-
       </div>
     </section>
-  );
-}
-
-/* ================= METRIC CARD ================= */
-
-function MetricCard({
-  label,
-  value,
-  accent = false,
-}: {
-  label: string;
-  value: string;
-  accent?: boolean;
-}) {
-  return (
-    <motion.div
-      variants={fadeUp}
-      whileHover={{ y: -3 }}
-      transition={springTransition}
-      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
-    >
-      <p className="truncate text-[8px] text-[#777B84]">
-        {label}
-      </p>
-
-      <p
-        className={`mt-2 truncate font-space text-[17px] font-medium tracking-[-0.02em] sm:text-[20px] ${
-          accent
-            ? "text-[#52B788]"
-            : "text-[#F1F1F2]"
-        }`}
-      >
-        {value}
-      </p>
-    </motion.div>
-  );
-}
-
-/* ================= BUDGET SUMMARY ================= */
-
-function BudgetSummary({
-  label,
-  percentage,
-  amount,
-  color,
-}: {
-  label: string;
-  percentage: number;
-  amount: string;
-  color: string;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -3 }}
-      transition={springTransition}
-      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
-    >
-      <div className="flex items-center gap-2">
-
-        <span
-          className="h-2 w-2 shrink-0 rounded-full"
-          style={{
-            backgroundColor: color,
-          }}
-        />
-
-        <p className="text-[9px] text-[#777B84]">
-          {label}
-        </p>
-
-      </div>
-
-      <p className="mt-3 truncate font-space text-[18px] text-[#F1F1F2] sm:text-[19px]">
-        {amount}
-      </p>
-
-      <p className="mt-1 text-[8px] text-[#777B84]">
-        {percentage}% of income
-      </p>
-    </motion.div>
   );
 }

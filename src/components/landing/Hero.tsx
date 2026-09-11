@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
   fadeUp,
   fadeIn,
@@ -35,7 +36,6 @@ export function Hero() {
   return (
     <section className="w-full overflow-x-hidden bg-background">
       <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-8 sm:py-24 lg:grid lg:grid-cols-2 lg:items-center lg:gap-20 lg:py-28">
-
         {/* HERO COPY */}
 
         <motion.div
@@ -69,27 +69,35 @@ export function Hero() {
             variants={staggerContainer}
             className="mt-8 flex w-[calc(100vw-2rem)] flex-col gap-3 sm:mt-9 sm:w-full sm:flex-row sm:items-center sm:gap-4"
           >
-            <motion.button
-              type="button"
-              variants={fadeUp}
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              transition={springTransition}
-              className="box-border w-full rounded-[7px] bg-accent-primary px-4 py-3 text-[11px] font-medium text-white transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
+            <Link
+              to="/signup"
+              className="w-full sm:w-auto"
             >
-              See your money clearly
-            </motion.button>
+              <motion.div
+                variants={fadeUp}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                transition={springTransition}
+                className="box-border w-full rounded-[7px] bg-accent-primary px-4 py-3 text-center text-[11px] font-medium text-white transition-opacity hover:opacity-90 sm:py-2.5"
+              >
+                See your money clearly
+              </motion.div>
+            </Link>
 
-            <motion.button
-              type="button"
-              variants={fadeUp}
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              transition={springTransition}
-              className="box-border w-full rounded-[7px] border border-border-aurora bg-transparent px-4 py-3 text-[11px] font-medium text-text-primary transition-colors hover:bg-surface sm:w-auto sm:py-2.5"
+            <a
+              href="#allocator"
+              className="w-full sm:w-auto"
             >
-              Try the live demo
-            </motion.button>
+              <motion.div
+                variants={fadeUp}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                transition={springTransition}
+                className="box-border w-full rounded-[7px] border border-border-aurora bg-transparent px-4 py-3 text-center text-[11px] font-medium text-text-primary transition-colors hover:bg-surface sm:py-2.5"
+              >
+                Try the live demo
+              </motion.div>
+            </a>
           </motion.div>
         </motion.div>
 
@@ -111,7 +119,6 @@ export function Hero() {
             transition={springTransition}
             className="box-border w-full min-w-0 rounded-[15px] border border-border-aurora bg-surface p-4 sm:p-6"
           >
-
             {/* TOP METRICS */}
 
             <motion.div
@@ -232,10 +239,8 @@ export function Hero() {
                 Saving 18% more than last month.
               </p>
             </motion.div>
-
           </motion.div>
         </motion.div>
-
       </div>
     </section>
   );

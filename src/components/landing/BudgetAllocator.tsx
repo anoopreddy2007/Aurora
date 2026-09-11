@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   fadeUp,
@@ -6,51 +6,73 @@ import {
   staggerContainer,
   viewportOnce,
 } from "../../lib/motion";
+import { useFinance } from "../../context/FinanceContext";
+import { formatCurrency } from "../../data/finance";
 
-type Allocation = {
-  needs: number;
-  wants: number;
-  savings: number;
-};
+type AllocationKey = "needs" | "wants" | "savings";
 
-const INCOME = 80000;
-
-const initialAllocation: Allocation = {
-  needs: 90,
-  wants: 5,
-  savings: 5,
-};
-
-const categories = [
+const categories: {
+  key: AllocationKey;
+  label: string;
+  color: string;
+}[] = [
   {
-    key: "needs" as const,
+    key: "needs",
     label: "Needs",
     color: "#52B788",
   },
   {
-    key: "wants" as const,
+    key: "wants",
     label: "Wants",
     color: "#666CC7",
   },
   {
-    key: "savings" as const,
+    key: "savings",
     label: "Savings",
     color: "#7C83FF",
   },
 ];
 
 export function BudgetAllocator() {
-  const [allocation, setAllocation] =
-    useState<Allocation>(initialAllocation);
+  const {
+    finance,
+    setIncome,
+    setAllocation,
+  } = useFinance();
+
+  const { income, allocation } = finance;
+
+  const totalAllocated =
+    allocation.needs +
+    allocation.wants +
+    allocation.savings;
+
+  const amounts = useMemo(
+    () => ({
+      needs: Math.round(
+        (income * allocation.needs) / 100
+      ),
+      wants: Math.round(
+        (income * allocation.wants) / 100
+      ),
+      savings: Math.round(
+        (income * allocation.savings) / 100
+      ),
+    }),
+    [income, allocation]
+  );
 
   const updateAllocation = (
-    changedKey: keyof Allocation,
+    changedKey: AllocationKey,
     newValue: number
   ) => {
-    const value = Math.max(0, Math.min(100, newValue));
+    const value = Math.max(
+      0,
+      Math.min(100, newValue)
+    );
 
     const otherKeys = (
-      Object.keys(allocation) as Array<keyof Allocation>
+      Object.keys(allocation) as AllocationKey[]
     ).filter((key) => key !== changedKey);
 
     const remaining = 100 - value;
@@ -69,14 +91,19 @@ export function BudgetAllocator() {
 
     if (remaining > 0) {
       if (currentOtherTotal === 0) {
-        firstValue = Math.floor(remaining / 2);
-        secondValue = remaining - firstValue;
+        firstValue = Math.floor(
+          remaining / 2
+        );
+        secondValue =
+          remaining - firstValue;
       } else {
         firstValue = Math.round(
-          (firstCurrent / currentOtherTotal) * remaining
+          (firstCurrent / currentOtherTotal) *
+            remaining
         );
 
-        secondValue = remaining - firstValue;
+        secondValue =
+          remaining - firstValue;
       }
     }
 
@@ -87,23 +114,6 @@ export function BudgetAllocator() {
       [secondKey]: secondValue,
     });
   };
-
-  const needsAmount = Math.round(
-    (INCOME * allocation.needs) / 100
-  );
-
-  const wantsAmount = Math.round(
-    (INCOME * allocation.wants) / 100
-  );
-
-  const savingsAmount = Math.round(
-    (INCOME * allocation.savings) / 100
-  );
-
-  const totalAllocated =
-    allocation.needs +
-    allocation.wants +
-    allocation.savings;
 
   return (
     <section
@@ -132,9 +142,8 @@ export function BudgetAllocator() {
           </h2>
 
           <p className="mt-6 w-full max-w-[480px] break-words text-[12px] leading-[1.8] text-[#777B84] sm:text-[13px]">
-            Adjust your budget and see how your money changes
-            instantly. Move the sliders to find an allocation
-            that feels right for you.
+            Set your income and adjust your budget
+            to see how your money changes instantly.
           </p>
         </motion.div>
 
@@ -148,7 +157,7 @@ export function BudgetAllocator() {
           className="mt-12 grid w-full min-w-0 overflow-hidden rounded-[22px] border border-[#292B30] bg-[#111214] sm:mt-16 lg:grid-cols-2"
         >
 
-          {/* LEFT — SLIDERS */}
+          {/* LEFT */}
 
           <motion.div
             variants={staggerContainer}
@@ -162,115 +171,144 @@ export function BudgetAllocator() {
                 Monthly income
               </p>
 
-              <p className="mt-3 font-space text-[27px] font-medium tracking-[-0.04em] text-[#F1F1F2] sm:text-[30px]">
-                ₹80,000
+              <div className="mt-3 flex items-center gap-2">
+                <span className="font-space text-[24px] text-[#F1F1F2]">
+                  ₹
+                </span>
+
+                <input
+                  type="number"
+                  min="0"
+                  step="500"
+                  value={income}
+                  onChange={(event) =>
+                    setIncome(
+                      Number(event.target.value)
+                    )
+                  }
+                  aria-label="Monthly income"
+                  className="w-full min-w-0 bg-transparent font-space text-[27px] font-medium tracking-[-0.04em] text-[#F1F1F2] outline-none placeholder:text-[#55585F] sm:text-[30px]"
+                />
+              </div>
+
+              <p className="mt-2 text-[7px] text-[#55585F]">
+                Enter your monthly take-home income.
               </p>
             </motion.div>
 
             {/* SLIDERS */}
 
             <div className="mt-10 space-y-7 sm:mt-12 sm:space-y-8">
-              {categories.map((category, index) => {
-                const value = allocation[category.key];
+              {categories.map(
+                (category, index) => {
+                  const value =
+                    allocation[category.key];
 
-                const amount = Math.round(
-                  (INCOME * value) / 100
-                );
+                  const amount =
+                    amounts[category.key];
 
-                return (
-                  <motion.div
-                    key={category.key}
-                    variants={fadeUp}
-                    transition={{
-                      duration: 0.5,
-                      delay: index * 0.08,
-                    }}
-                    className="min-w-0"
-                  >
+                  return (
+                    <motion.div
+                      key={category.key}
+                      variants={fadeUp}
+                      transition={{
+                        duration: 0.5,
+                        delay: index * 0.08,
+                      }}
+                      className="min-w-0"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span
+                            className="h-2 w-2 shrink-0 rounded-full"
+                            style={{
+                              backgroundColor:
+                                category.color,
+                            }}
+                          />
 
-                    {/* LABEL */}
+                          <span className="text-[10px] font-medium text-[#F1F1F2]">
+                            {category.label}
+                          </span>
+                        </div>
 
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex min-w-0 items-center gap-2">
-                        <span
-                          className="h-2 w-2 shrink-0 rounded-full"
+                        <motion.span
+                          key={value}
+                          initial={{
+                            opacity: 0.5,
+                          }}
+                          animate={{
+                            opacity: 1,
+                          }}
+                          className="shrink-0 font-space text-[13px] font-semibold text-[#F1F1F2]"
+                        >
+                          {value}%
+                        </motion.span>
+                      </div>
+
+                      <div className="relative mt-5 w-full">
+                        <div className="absolute left-0 right-0 top-1/2 h-[5px] -translate-y-1/2 rounded-full bg-[#24262A]" />
+
+                        <motion.div
+                          animate={{
+                            width: `${value}%`,
+                          }}
+                          transition={{
+                            duration: 0.2,
+                            ease: "easeOut",
+                          }}
+                          className="absolute left-0 top-1/2 h-[5px] -translate-y-1/2 rounded-full"
                           style={{
-                            backgroundColor: category.color,
+                            backgroundColor:
+                              category.color,
                           }}
                         />
 
-                        <span className="text-[10px] font-medium text-[#F1F1F2]">
-                          {category.label}
-                        </span>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          step="1"
+                          value={value}
+                          onChange={(event) =>
+                            updateAllocation(
+                              category.key,
+                              Number(
+                                event.target.value
+                              )
+                            )
+                          }
+                          aria-label={`${category.label} allocation`}
+                          className="relative z-10 h-6 w-full cursor-pointer appearance-none bg-transparent"
+                          style={{
+                            accentColor:
+                              category.color,
+                          }}
+                        />
                       </div>
 
-                      <motion.span
-                        key={value}
-                        initial={{ opacity: 0.5 }}
-                        animate={{ opacity: 1 }}
-                        className="shrink-0 font-space text-[13px] font-semibold text-[#F1F1F2]"
-                      >
-                        {value}%
-                      </motion.span>
-                    </div>
+                      <div className="flex items-center justify-between gap-2 text-[7px] text-[#55585F]">
+                        <span>0%</span>
 
-                    {/* SLIDER */}
+                        <motion.span
+                          key={`${category.key}-${amount}`}
+                          initial={{
+                            opacity: 0.5,
+                          }}
+                          animate={{
+                            opacity: 1,
+                          }}
+                          className="truncate"
+                        >
+                          {formatCurrency(amount)}
+                        </motion.span>
 
-                    <div className="relative mt-5 w-full">
-                      <div className="absolute left-0 right-0 top-1/2 h-[5px] -translate-y-1/2 rounded-full bg-[#24262A]" />
-
-                      <motion.div
-                        animate={{ width: `${value}%` }}
-                        transition={{
-                          duration: 0.2,
-                          ease: "easeOut",
-                        }}
-                        className="absolute left-0 top-1/2 h-[5px] -translate-y-1/2 rounded-full"
-                        style={{
-                          backgroundColor: category.color,
-                        }}
-                      />
-
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        step="1"
-                        value={value}
-                        onChange={(event) =>
-                          updateAllocation(
-                            category.key,
-                            Number(event.target.value)
-                          )
-                        }
-                        aria-label={`${category.label} allocation`}
-                        className="relative z-10 h-6 w-full cursor-pointer appearance-none bg-transparent"
-                        style={{
-                          accentColor: category.color,
-                        }}
-                      />
-                    </div>
-
-                    {/* RANGE INFORMATION */}
-
-                    <div className="flex items-center justify-between gap-2 text-[7px] text-[#55585F]">
-                      <span>0%</span>
-
-                      <motion.span
-                        key={`${category.key}-${amount}`}
-                        initial={{ opacity: 0.5 }}
-                        animate={{ opacity: 1 }}
-                        className="truncate"
-                      >
-                        ₹{amount.toLocaleString("en-IN")}
-                      </motion.span>
-
-                      <span>100%</span>
-                    </div>
-
-                  </motion.div>
-                );
-              })}
+                        <span>100%</span>
+                      </div>
+                    </motion.div>
+                  );
+                }
+              )}
             </div>
 
             {/* TOTAL */}
@@ -287,7 +325,11 @@ export function BudgetAllocator() {
                 key={totalAllocated}
                 initial={{ opacity: 0.5 }}
                 animate={{ opacity: 1 }}
-                className="shrink-0 font-space text-[11px] font-medium text-[#F1F1F2]"
+                className={`shrink-0 font-space text-[11px] font-medium ${
+                  totalAllocated === 100
+                    ? "text-[#F1F1F2]"
+                    : "text-[#D6A85F]"
+                }`}
               >
                 {totalAllocated}%
               </motion.span>
@@ -295,13 +337,12 @@ export function BudgetAllocator() {
 
           </motion.div>
 
-          {/* RIGHT — CHART */}
+          {/* RIGHT */}
 
           <motion.div
             variants={fadeUp}
             className="flex min-w-0 flex-col justify-center p-5 sm:p-9"
           >
-
             <div>
               <p className="text-[9px] uppercase tracking-[0.16em] text-[#777B84]">
                 Where your money goes
@@ -316,14 +357,10 @@ export function BudgetAllocator() {
 
             <div className="mt-8 flex justify-center sm:mt-10">
               <div className="relative h-[190px] w-[190px] sm:h-[220px] sm:w-[220px]">
-
                 <svg
                   viewBox="0 0 220 220"
                   className="h-full w-full -rotate-90"
                 >
-
-                  {/* BACKGROUND RING */}
-
                   <circle
                     cx="110"
                     cy="110"
@@ -332,8 +369,6 @@ export function BudgetAllocator() {
                     stroke="#24262A"
                     strokeWidth="22"
                   />
-
-                  {/* NEEDS */}
 
                   {allocation.needs > 0 && (
                     <motion.circle
@@ -346,7 +381,9 @@ export function BudgetAllocator() {
                       strokeLinecap="round"
                       animate={{
                         strokeDasharray: `${
-                          (allocation.needs / 100) * 490
+                          (allocation.needs /
+                            100) *
+                          490
                         } 490`,
                       }}
                       transition={{
@@ -355,8 +392,6 @@ export function BudgetAllocator() {
                       }}
                     />
                   )}
-
-                  {/* WANTS */}
 
                   {allocation.wants > 0 && (
                     <motion.circle
@@ -369,10 +404,15 @@ export function BudgetAllocator() {
                       strokeLinecap="round"
                       animate={{
                         strokeDasharray: `${
-                          (allocation.wants / 100) * 490
+                          (allocation.wants /
+                            100) *
+                          490
                         } 490`,
                         strokeDashoffset: `${
-                          -(allocation.needs / 100) * 490
+                          -(
+                            allocation.needs /
+                            100
+                          ) * 490
                         }`,
                       }}
                       transition={{
@@ -381,8 +421,6 @@ export function BudgetAllocator() {
                       }}
                     />
                   )}
-
-                  {/* SAVINGS */}
 
                   {allocation.savings > 0 && (
                     <motion.circle
@@ -395,7 +433,9 @@ export function BudgetAllocator() {
                       strokeLinecap="round"
                       animate={{
                         strokeDasharray: `${
-                          (allocation.savings / 100) * 490
+                          (allocation.savings /
+                            100) *
+                          490
                         } 490`,
                         strokeDashoffset: `${
                           -(
@@ -411,21 +451,17 @@ export function BudgetAllocator() {
                       }}
                     />
                   )}
-
                 </svg>
-
-                {/* CENTER */}
 
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <p className="font-space text-[25px] font-medium tracking-[-0.04em] text-[#F1F1F2] sm:text-[28px]">
-                    ₹80K
+                    {formatCurrency(income)}
                   </p>
 
                   <p className="mt-1 text-[8px] uppercase tracking-[0.15em] text-[#777B84]">
                     monthly
                   </p>
                 </div>
-
               </div>
             </div>
 
@@ -435,88 +471,49 @@ export function BudgetAllocator() {
               variants={staggerContainer}
               className="mt-8 space-y-4 sm:mt-10"
             >
+              {categories.map(
+                (category) => (
+                  <motion.div
+                    key={category.key}
+                    variants={fadeUp}
+                    className="flex items-center justify-between gap-4"
+                  >
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span
+                        className="h-2 w-2 shrink-0 rounded-full"
+                        style={{
+                          backgroundColor:
+                            category.color,
+                        }}
+                      />
 
-              {/* NEEDS */}
+                      <span className="text-[10px] text-[#A7ABB4]">
+                        {category.label}
+                      </span>
+                    </div>
 
-              <motion.div
-                variants={fadeUp}
-                className="flex items-center justify-between gap-4"
-              >
-                <div className="flex min-w-0 items-center gap-2">
-                  <span className="h-2 w-2 shrink-0 rounded-full bg-[#52B788]" />
+                    <div className="shrink-0 text-right">
+                      <span className="font-space text-[10px] text-[#F1F1F2]">
+                        {formatCurrency(
+                          amounts[category.key]
+                        )}
+                      </span>
 
-                  <span className="text-[10px] text-[#A7ABB4]">
-                    Needs
-                  </span>
-                </div>
-
-                <div className="shrink-0 text-right">
-                  <span className="font-space text-[10px] text-[#F1F1F2]">
-                    ₹{needsAmount.toLocaleString("en-IN")}
-                  </span>
-
-                  <span className="ml-2 text-[9px] text-[#777B84]">
-                    {allocation.needs}%
-                  </span>
-                </div>
-              </motion.div>
-
-              {/* WANTS */}
-
-              <motion.div
-                variants={fadeUp}
-                className="flex items-center justify-between gap-4"
-              >
-                <div className="flex min-w-0 items-center gap-2">
-                  <span className="h-2 w-2 shrink-0 rounded-full bg-[#666CC7]" />
-
-                  <span className="text-[10px] text-[#A7ABB4]">
-                    Wants
-                  </span>
-                </div>
-
-                <div className="shrink-0 text-right">
-                  <span className="font-space text-[10px] text-[#F1F1F2]">
-                    ₹{wantsAmount.toLocaleString("en-IN")}
-                  </span>
-
-                  <span className="ml-2 text-[9px] text-[#777B84]">
-                    {allocation.wants}%
-                  </span>
-                </div>
-              </motion.div>
-
-              {/* SAVINGS */}
-
-              <motion.div
-                variants={fadeUp}
-                className="flex items-center justify-between gap-4"
-              >
-                <div className="flex min-w-0 items-center gap-2">
-                  <span className="h-2 w-2 shrink-0 rounded-full bg-[#7C83FF]" />
-
-                  <span className="text-[10px] text-[#A7ABB4]">
-                    Savings
-                  </span>
-                </div>
-
-                <div className="shrink-0 text-right">
-                  <span className="font-space text-[10px] text-[#F1F1F2]">
-                    ₹{savingsAmount.toLocaleString("en-IN")}
-                  </span>
-
-                  <span className="ml-2 text-[9px] text-[#777B84]">
-                    {allocation.savings}%
-                  </span>
-                </div>
-              </motion.div>
-
+                      <span className="ml-2 text-[9px] text-[#777B84]">
+                        {
+                          allocation[
+                            category.key
+                          ]
+                        }%
+                      </span>
+                    </div>
+                  </motion.div>
+                )
+              )}
             </motion.div>
 
           </motion.div>
-
         </motion.div>
-
       </div>
     </section>
   );
