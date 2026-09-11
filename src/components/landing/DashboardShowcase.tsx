@@ -1,4 +1,11 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  fadeUp,
+  staggerContainer,
+  viewportOnce,
+  springTransition,
+} from "../../lib/motion";
 
 type DashboardTab = "Overview" | "Spending" | "Budget" | "Goals";
 
@@ -102,7 +109,13 @@ export function DashboardShowcase() {
 
         {/* ================= SECTION HEADING ================= */}
 
-        <div className="max-w-2xl">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="max-w-2xl"
+        >
           <p className="mb-6 text-[10px] font-medium uppercase tracking-[0.22em] text-[#777B84]">
             Inside Aurora
           </p>
@@ -118,11 +131,20 @@ export function DashboardShowcase() {
             budget and progress without digging through
             spreadsheets.
           </p>
-        </div>
+        </motion.div>
 
         {/* ================= DASHBOARD ================= */}
 
-        <div className="mt-16 overflow-hidden rounded-[20px] border border-[#292B30] bg-[#17181B]">
+        <motion.div
+          initial={{ opacity: 0, y: 35, scale: 0.98 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={viewportOnce}
+          transition={{
+            duration: 0.8,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="mt-16 overflow-hidden rounded-[20px] border border-[#292B30] bg-[#17181B]"
+        >
 
           {/* Dashboard header */}
 
@@ -145,10 +167,12 @@ export function DashboardShowcase() {
                 const isActive = activeTab === tab;
 
                 return (
-                  <button
+                  <motion.button
                     key={tab}
                     type="button"
                     onClick={() => setActiveTab(tab)}
+                    whileTap={{ scale: 0.96 }}
+                    transition={springTransition}
                     className={`whitespace-nowrap rounded-[6px] px-3 py-2 text-[8px] font-medium transition-colors ${
                       isActive
                         ? "bg-[#292B30] text-[#F1F1F2]"
@@ -156,7 +180,7 @@ export function DashboardShowcase() {
                     }`}
                   >
                     {tab}
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
@@ -166,559 +190,676 @@ export function DashboardShowcase() {
 
           <div className="p-6 sm:p-7">
 
-            {/* ================= OVERVIEW ================= */}
+            <AnimatePresence mode="wait">
 
-            {activeTab === "Overview" && (
-              <div>
+              {/* ================= OVERVIEW ================= */}
 
-                {/* Financial metrics */}
+              {activeTab === "Overview" && (
+                <motion.div
+                  key="overview"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35 }}
+                >
 
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {/* Financial metrics */}
 
-                  <MetricCard
-                    label="Total balance"
-                    value="₹80,000"
-                  />
+                  <motion.div
+                    variants={staggerContainer}
+                    initial="hidden"
+                    animate="visible"
+                    className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+                  >
+                    <MetricCard
+                      label="Total balance"
+                      value="₹80,000"
+                    />
 
-                  <MetricCard
-                    label="Monthly income"
-                    value="₹80,000"
-                  />
+                    <MetricCard
+                      label="Monthly income"
+                      value="₹80,000"
+                    />
 
-                  <MetricCard
-                    label="Spent this month"
-                    value="₹32,000"
-                  />
+                    <MetricCard
+                      label="Spent this month"
+                      value="₹32,000"
+                    />
 
-                  <MetricCard
-                    label="Savings"
-                    value="₹47,600"
-                    accent
-                  />
+                    <MetricCard
+                      label="Savings"
+                      value="₹47,600"
+                      accent
+                    />
+                  </motion.div>
 
-                </div>
+                  {/* Main row */}
 
-                {/* Main row */}
+                  <div className="mt-3 grid gap-3 lg:grid-cols-[1.2fr_0.8fr]">
 
-                <div className="mt-3 grid gap-3 lg:grid-cols-[1.2fr_0.8fr]">
+                    {/* ================= SPENDING OVERVIEW ================= */}
 
-                  {/* ================= SPENDING OVERVIEW ================= */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 18 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.12 }}
+                      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+                    >
+                      <div className="flex items-center justify-between">
 
-                  <div className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5">
+                        <div>
+                          <p className="text-[9px] text-[#777B84]">
+                            Spending overview
+                          </p>
 
-                    <div className="flex items-center justify-between">
+                          <p className="mt-1 font-space text-[13px] font-medium text-[#F1F1F2]">
+                            ₹32,000
+                          </p>
+                        </div>
 
-                      <div>
-                        <p className="text-[9px] text-[#777B84]">
-                          Spending overview
-                        </p>
-
-                        <p className="mt-1 font-space text-[13px] font-medium text-[#F1F1F2]">
-                          ₹32,000
-                        </p>
+                        <span className="text-[8px] text-[#777B84]">
+                          This month
+                        </span>
                       </div>
 
-                      <span className="text-[8px] text-[#777B84]">
-                        This month
-                      </span>
+                      {/* Chart */}
 
-                    </div>
+                      <div className="mt-7">
 
-                    {/* Chart */}
+                        <div className="relative flex h-[180px] items-end gap-3 border-b border-[#292B30] px-1">
 
-                    <div className="mt-7">
-
-                      <div className="relative flex h-[180px] items-end gap-3 border-b border-[#292B30] px-1">
-
-                        {chartValues.map(
-                          (height, index) => (
-                            <div
-                              key={index}
-                              className="flex h-full flex-1 items-end"
-                            >
+                          {chartValues.map(
+                            (height, index) => (
                               <div
-                                className="w-full rounded-t-[3px]"
-                                style={{
-                                  height: `${height}%`,
-                                  minHeight: "10px",
-                                  backgroundColor:
-                                    index === 7
-                                      ? "#8D83B8"
-                                      : "#555B68",
-                                }}
-                              />
+                                key={index}
+                                className="flex h-full flex-1 items-end"
+                              >
+                                <motion.div
+                                  initial={{
+                                    height: 0,
+                                    opacity: 0,
+                                  }}
+                                  animate={{
+                                    height: `${height}%`,
+                                    opacity: 1,
+                                  }}
+                                  transition={{
+                                    duration: 0.65,
+                                    delay:
+                                      0.05 + index * 0.045,
+                                    ease: [
+                                      0.22,
+                                      1,
+                                      0.36,
+                                      1,
+                                    ],
+                                  }}
+                                  className="w-full rounded-t-[3px]"
+                                  style={{
+                                    minHeight: "10px",
+                                    backgroundColor:
+                                      index === 7
+                                        ? "#8D83B8"
+                                        : "#555B68",
+                                  }}
+                                />
+                              </div>
+                            )
+                          )}
+
+                        </div>
+
+                        {/* Chart labels */}
+
+                        <div className="mt-3 flex justify-between text-[7px] text-[#777B84]">
+                          <span>1 Oct</span>
+                          <span>7 Oct</span>
+                          <span>14 Oct</span>
+                          <span>21 Oct</span>
+                          <span>31 Oct</span>
+                        </div>
+
+                      </div>
+                    </motion.div>
+
+                    {/* ================= BUDGET BREAKDOWN ================= */}
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 18 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+                    >
+                      <div className="flex items-center justify-between">
+
+                        <div>
+                          <p className="text-[9px] text-[#777B84]">
+                            Budget breakdown
+                          </p>
+
+                          <p className="mt-1 font-space text-[13px] font-medium text-[#F1F1F2]">
+                            ₹80,000
+                          </p>
+                        </div>
+
+                        <span className="text-[8px] text-[#777B84]">
+                          Allocated
+                        </span>
+                      </div>
+
+                      <motion.div
+                        variants={staggerContainer}
+                        initial="hidden"
+                        animate="visible"
+                        className="mt-6 space-y-4"
+                      >
+                        {spending.map((item) => (
+                          <motion.div
+                            key={item.label}
+                            variants={fadeUp}
+                          >
+                            <div className="mb-2 flex items-center justify-between">
+
+                              <div className="flex items-center gap-2">
+
+                                <span
+                                  className="h-1.5 w-1.5 rounded-full"
+                                  style={{
+                                    backgroundColor:
+                                      item.color,
+                                  }}
+                                />
+
+                                <span className="text-[8px] text-[#A7ABB4]">
+                                  {item.label}
+                                </span>
+
+                              </div>
+
+                              <span className="text-[8px] text-[#777B84]">
+                                {item.percentage}%
+                              </span>
+
                             </div>
-                          ),
-                        )}
 
-                      </div>
-
-                      {/* Chart labels */}
-
-                      <div className="mt-3 flex justify-between text-[7px] text-[#777B84]">
-                        <span>1 Oct</span>
-                        <span>7 Oct</span>
-                        <span>14 Oct</span>
-                        <span>21 Oct</span>
-                        <span>31 Oct</span>
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                  {/* ================= BUDGET BREAKDOWN ================= */}
-
-                  <div className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5">
-
-                    <div className="flex items-center justify-between">
-
-                      <div>
-                        <p className="text-[9px] text-[#777B84]">
-                          Budget breakdown
-                        </p>
-
-                        <p className="mt-1 font-space text-[13px] font-medium text-[#F1F1F2]">
-                          ₹80,000
-                        </p>
-                      </div>
-
-                      <span className="text-[8px] text-[#777B84]">
-                        Allocated
-                      </span>
-
-                    </div>
-
-                    <div className="mt-6 space-y-4">
-
-                      {spending.map((item) => (
-                        <div key={item.label}>
-
-                          <div className="mb-2 flex items-center justify-between">
-
-                            <div className="flex items-center gap-2">
-
-                              <span
-                                className="h-1.5 w-1.5 rounded-full"
+                            <div className="h-1 overflow-hidden rounded-full bg-[#25272C]">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{
+                                  width: `${item.percentage}%`,
+                                }}
+                                transition={{
+                                  duration: 0.65,
+                                  ease: "easeOut",
+                                }}
+                                className="h-full rounded-full"
                                 style={{
                                   backgroundColor:
                                     item.color,
                                 }}
                               />
+                            </div>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    </motion.div>
 
-                              <span className="text-[8px] text-[#A7ABB4]">
-                                {item.label}
+                  </div>
+
+                  {/* ================= BOTTOM ROW ================= */}
+
+                  <div className="mt-3 grid gap-3 lg:grid-cols-2">
+
+                    {/* Transactions */}
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 18 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.28 }}
+                      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+                    >
+                      <div className="flex items-center justify-between">
+
+                        <p className="text-[9px] font-medium text-[#F1F1F2]">
+                          Recent transactions
+                        </p>
+
+                        <button
+                          type="button"
+                          className="text-[8px] text-[#777B84] hover:text-[#A7ABB4]"
+                        >
+                          View all
+                        </button>
+
+                      </div>
+
+                      <div className="mt-4">
+
+                        {transactions.map(
+                          (transaction, index) => (
+                            <motion.div
+                              key={transaction.name}
+                              initial={{
+                                opacity: 0,
+                                x: -10,
+                              }}
+                              animate={{
+                                opacity: 1,
+                                x: 0,
+                              }}
+                              transition={{
+                                duration: 0.35,
+                                delay:
+                                  0.3 + index * 0.06,
+                              }}
+                              className={`flex items-center justify-between py-3 ${
+                                index !==
+                                transactions.length - 1
+                                  ? "border-b border-[#292B30]"
+                                  : ""
+                              }`}
+                            >
+                              <div>
+                                <p className="text-[9px] text-[#A7ABB4]">
+                                  {transaction.name}
+                                </p>
+
+                                <p className="mt-0.5 text-[7px] text-[#777B84]">
+                                  {transaction.category}
+                                </p>
+                              </div>
+
+                              <span className="font-space text-[9px] text-[#F1F1F2]">
+                                {transaction.amount}
                               </span>
+                            </motion.div>
+                          )
+                        )}
+
+                      </div>
+                    </motion.div>
+
+                    {/* Goals */}
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 18 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.34 }}
+                      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+                    >
+                      <div className="flex items-center justify-between">
+
+                        <p className="text-[9px] font-medium text-[#F1F1F2]">
+                          Goals
+                        </p>
+
+                        <span className="text-[8px] text-[#777B84]">
+                          2 active
+                        </span>
+
+                      </div>
+
+                      <div className="mt-4 space-y-5">
+
+                        {goals.map((goal, index) => (
+                          <div key={goal.name}>
+
+                            <div className="flex items-center justify-between">
+
+                              <p className="text-[9px] text-[#A7ABB4]">
+                                {goal.name}
+                              </p>
+
+                              <p className="text-[8px] text-[#777B84]">
+                                {goal.progress}%
+                              </p>
 
                             </div>
 
-                            <span className="text-[8px] text-[#777B84]">
-                              {item.percentage}%
-                            </span>
+                            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#25272C]">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{
+                                  width: `${goal.progress}%`,
+                                }}
+                                transition={{
+                                  duration: 0.7,
+                                  delay:
+                                    0.35 + index * 0.1,
+                                  ease: "easeOut",
+                                }}
+                                className="h-full rounded-full"
+                                style={{
+                                  backgroundColor:
+                                    "#52B788",
+                                }}
+                              />
+                            </div>
+
+                            <div className="mt-2 flex justify-between text-[7px] text-[#777B84]">
+                              <span>{goal.current}</span>
+                              <span>{goal.target}</span>
+                            </div>
 
                           </div>
+                        ))}
 
-                          <div className="h-1 overflow-hidden rounded-full bg-[#25272C]">
+                      </div>
+                    </motion.div>
 
-                            <div
+                  </div>
+
+                  {/* ================= INSIGHT ================= */}
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                    className="mt-3 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+                  >
+                    <p className="text-[8px] uppercase tracking-[0.16em] text-[#777B84]">
+                      Aurora insight
+                    </p>
+
+                    <p className="mt-2 font-space text-[12px] text-[#F1F1F2]">
+                      Your spending is on track this month.
+                    </p>
+
+                    <p className="mt-1 text-[8px] leading-5 text-[#777B84]">
+                      You're spending less on discretionary
+                      categories while keeping your savings
+                      rate healthy.
+                    </p>
+                  </motion.div>
+
+                </motion.div>
+              )}
+
+              {/* ================= SPENDING TAB ================= */}
+
+              {activeTab === "Spending" && (
+                <motion.div
+                  key="spending"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35 }}
+                  className="grid gap-3 lg:grid-cols-2"
+                >
+
+                  <div className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-6">
+
+                    <p className="text-[9px] text-[#777B84]">
+                      Monthly spending
+                    </p>
+
+                    <p className="mt-2 font-space text-[30px] text-[#F1F1F2]">
+                      ₹32,000
+                    </p>
+
+                    <p className="mt-1 text-[8px] text-[#52B788]">
+                      8% lower than last month
+                    </p>
+
+                    <div className="mt-8 space-y-5">
+                      {spending.map((item, index) => (
+                        <div key={item.label}>
+
+                          <div className="flex justify-between">
+                            <span className="text-[9px] text-[#A7ABB4]">
+                              {item.label}
+                            </span>
+
+                            <span className="text-[9px] text-[#F1F1F2]">
+                              {item.amount}
+                            </span>
+                          </div>
+
+                          <div className="mt-2 h-2 rounded-full bg-[#25272C]">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{
+                                width: `${item.percentage}%`,
+                              }}
+                              transition={{
+                                duration: 0.6,
+                                delay: index * 0.08,
+                              }}
                               className="h-full rounded-full"
                               style={{
-                                width: `${item.percentage}%`,
                                 backgroundColor:
                                   item.color,
                               }}
                             />
-
                           </div>
 
                         </div>
                       ))}
-
                     </div>
 
                   </div>
 
-                </div>
+                  <div className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-6">
 
-                {/* ================= BOTTOM ROW ================= */}
+                    <p className="text-[9px] text-[#777B84]">
+                      Spending insight
+                    </p>
 
-                <div className="mt-3 grid gap-3 lg:grid-cols-2">
+                    <p className="mt-3 font-space text-[17px] leading-6 text-[#F1F1F2]">
+                      Food spending is your second largest
+                      category.
+                    </p>
 
-                  {/* Transactions */}
+                    <p className="mt-3 text-[9px] leading-5 text-[#777B84]">
+                      You have spent ₹7,200 this month, which
+                      is 22% of your total spending.
+                    </p>
 
-                  <div className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5">
+                    <div className="mt-7 rounded-[10px] border border-[#292B30] bg-[#17181B] p-4">
 
-                    <div className="flex items-center justify-between">
-
-                      <p className="text-[9px] font-medium text-[#F1F1F2]">
-                        Recent transactions
+                      <p className="text-[8px] text-[#777B84]">
+                        Largest category
                       </p>
 
-                      <button
-                        type="button"
-                        className="text-[8px] text-[#777B84] hover:text-[#A7ABB4]"
-                      >
-                        View all
-                      </button>
-
-                    </div>
-
-                    <div className="mt-4">
-
-                      {transactions.map(
-                        (transaction, index) => (
-                          <div
-                            key={transaction.name}
-                            className={`flex items-center justify-between py-3 ${
-                              index !==
-                              transactions.length - 1
-                                ? "border-b border-[#292B30]"
-                                : ""
-                            }`}
-                          >
-
-                            <div>
-
-                              <p className="text-[9px] text-[#A7ABB4]">
-                                {transaction.name}
-                              </p>
-
-                              <p className="mt-0.5 text-[7px] text-[#777B84]">
-                                {transaction.category}
-                              </p>
-
-                            </div>
-
-                            <span className="font-space text-[9px] text-[#F1F1F2]">
-                              {transaction.amount}
-                            </span>
-
-                          </div>
-                        ),
-                      )}
-
-                    </div>
-
-                  </div>
-
-                  {/* Goals */}
-
-                  <div className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5">
-
-                    <div className="flex items-center justify-between">
-
-                      <p className="text-[9px] font-medium text-[#F1F1F2]">
-                        Goals
+                      <p className="mt-1 font-space text-[13px] text-[#F1F1F2]">
+                        Rent · 56%
                       </p>
 
-                      <span className="text-[8px] text-[#777B84]">
-                        2 active
-                      </span>
-
-                    </div>
-
-                    <div className="mt-4 space-y-5">
-
-                      {goals.map((goal) => (
-                        <div key={goal.name}>
-
-                          <div className="flex items-center justify-between">
-
-                            <p className="text-[9px] text-[#A7ABB4]">
-                              {goal.name}
-                            </p>
-
-                            <p className="text-[8px] text-[#777B84]">
-                              {goal.progress}%
-                            </p>
-
-                          </div>
-
-                          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#25272C]">
-
-                            <div
-                              className="h-full rounded-full"
-                              style={{
-                                width: `${goal.progress}%`,
-                                backgroundColor:
-                                  "#52B788",
-                              }}
-                            />
-
-                          </div>
-
-                          <div className="mt-2 flex justify-between text-[7px] text-[#777B84]">
-                            <span>{goal.current}</span>
-                            <span>{goal.target}</span>
-                          </div>
-
-                        </div>
-                      ))}
-
                     </div>
 
                   </div>
 
-                </div>
+                </motion.div>
+              )}
 
-                {/* ================= INSIGHT ================= */}
+              {/* ================= BUDGET TAB ================= */}
 
-                <div className="mt-3 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5">
+              {activeTab === "Budget" && (
+                <motion.div
+                  key="budget"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35 }}
+                >
 
-                  <p className="text-[8px] uppercase tracking-[0.16em] text-[#777B84]">
-                    Aurora insight
-                  </p>
+                  <div className="grid gap-3 sm:grid-cols-3">
 
-                  <p className="mt-2 font-space text-[12px] text-[#F1F1F2]">
-                    Your spending is on track this month.
-                  </p>
-
-                  <p className="mt-1 text-[8px] leading-5 text-[#777B84]">
-                    You're spending less on discretionary
-                    categories while keeping your savings
-                    rate healthy.
-                  </p>
-
-                </div>
-
-              </div>
-            )}
-
-            {/* ================= SPENDING TAB ================= */}
-
-            {activeTab === "Spending" && (
-              <div className="grid gap-3 lg:grid-cols-2">
-
-                <div className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-6">
-
-                  <p className="text-[9px] text-[#777B84]">
-                    Monthly spending
-                  </p>
-
-                  <p className="mt-2 font-space text-[30px] text-[#F1F1F2]">
-                    ₹32,000
-                  </p>
-
-                  <p className="mt-1 text-[8px] text-[#52B788]">
-                    8% lower than last month
-                  </p>
-
-                  <div className="mt-8 space-y-5">
-
-                    {spending.map((item) => (
-                      <div key={item.label}>
-
-                        <div className="flex justify-between">
-
-                          <span className="text-[9px] text-[#A7ABB4]">
-                            {item.label}
-                          </span>
-
-                          <span className="text-[9px] text-[#F1F1F2]">
-                            {item.amount}
-                          </span>
-
-                        </div>
-
-                        <div className="mt-2 h-2 rounded-full bg-[#25272C]">
-
-                          <div
-                            className="h-full rounded-full"
-                            style={{
-                              width: `${item.percentage}%`,
-                              backgroundColor:
-                                item.color,
-                            }}
-                          />
-
-                        </div>
-
-                      </div>
-                    ))}
-
-                  </div>
-
-                </div>
-
-                <div className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-6">
-
-                  <p className="text-[9px] text-[#777B84]">
-                    Spending insight
-                  </p>
-
-                  <p className="mt-3 font-space text-[17px] leading-6 text-[#F1F1F2]">
-                    Food spending is your second largest
-                    category.
-                  </p>
-
-                  <p className="mt-3 text-[9px] leading-5 text-[#777B84]">
-                    You have spent ₹7,200 this month, which
-                    is 22% of your total spending.
-                  </p>
-
-                  <div className="mt-7 rounded-[10px] border border-[#292B30] bg-[#17181B] p-4">
-
-                    <p className="text-[8px] text-[#777B84]">
-                      Largest category
-                    </p>
-
-                    <p className="mt-1 font-space text-[13px] text-[#F1F1F2]">
-                      Rent · 56%
-                    </p>
-
-                  </div>
-
-                </div>
-
-              </div>
-            )}
-
-            {/* ================= BUDGET TAB ================= */}
-
-            {activeTab === "Budget" && (
-              <div>
-
-                <div className="grid gap-3 sm:grid-cols-3">
-
-                  <BudgetSummary
-                    label="Needs"
-                    percentage={56}
-                    amount="₹44,800"
-                    color="#7C83FF"
-                  />
-
-                  <BudgetSummary
-                    label="Wants"
-                    percentage={22}
-                    amount="₹17,600"
-                    color="#7C83FF"
-                  />
-
-                  <BudgetSummary
-                    label="Savings"
-                    percentage={22}
-                    amount="₹17,600"
-                    color="#52B788"
-                  />
-
-                </div>
-
-                <div className="mt-3 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-6">
-
-                  <p className="text-[9px] text-[#777B84]">
-                    Current allocation
-                  </p>
-
-                  <div className="mt-5 flex h-4 overflow-hidden rounded-full bg-[#25272C]">
-
-                    <div
-                      className="h-full"
-                      style={{
-                        width: "56%",
-                        backgroundColor: "#7C83FF",
-                      }}
+                    <BudgetSummary
+                      label="Needs"
+                      percentage={56}
+                      amount="₹44,800"
+                      color="#7C83FF"
                     />
 
-                    <div
-                      className="h-full"
-                      style={{
-                        width: "22%",
-                        backgroundColor: "#666CC7",
-                      }}
+                    <BudgetSummary
+                      label="Wants"
+                      percentage={22}
+                      amount="₹17,600"
+                      color="#7C83FF"
                     />
 
-                    <div
-                      className="h-full"
-                      style={{
-                        width: "22%",
-                        backgroundColor: "#52B788",
-                      }}
+                    <BudgetSummary
+                      label="Savings"
+                      percentage={22}
+                      amount="₹17,600"
+                      color="#52B788"
                     />
 
                   </div>
 
-                  <div className="mt-5 grid grid-cols-3">
+                  <div className="mt-3 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-6">
 
-                    <p className="text-[8px] text-[#777B84]">
-                      Needs · 56%
+                    <p className="text-[9px] text-[#777B84]">
+                      Current allocation
                     </p>
 
-                    <p className="text-center text-[8px] text-[#777B84]">
-                      Wants · 22%
-                    </p>
+                    <div className="mt-5 flex h-4 overflow-hidden rounded-full bg-[#25272C]">
 
-                    <p className="text-right text-[8px] text-[#777B84]">
-                      Savings · 22%
-                    </p>
-
-                  </div>
-
-                </div>
-
-              </div>
-            )}
-
-            {/* ================= GOALS TAB ================= */}
-
-            {activeTab === "Goals" && (
-              <div className="grid gap-3 lg:grid-cols-2">
-
-                {goals.map((goal) => (
-                  <div
-                    key={goal.name}
-                    className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-6"
-                  >
-
-                    <div className="flex items-start justify-between">
-
-                      <div>
-
-                        <p className="text-[9px] text-[#777B84]">
-                          Goal
-                        </p>
-
-                        <p className="mt-1 font-space text-[17px] text-[#F1F1F2]">
-                          {goal.name}
-                        </p>
-
-                      </div>
-
-                      <span className="font-space text-[12px] text-[#52B788]">
-                        {goal.progress}%
-                      </span>
-
-                    </div>
-
-                    <div className="mt-7 h-2 rounded-full bg-[#25272C]">
-
-                      <div
-                        className="h-full rounded-full"
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: "56%" }}
+                        transition={{ duration: 0.6 }}
+                        className="h-full"
                         style={{
-                          width: `${goal.progress}%`,
+                          backgroundColor: "#7C83FF",
+                        }}
+                      />
+
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: "22%" }}
+                        transition={{
+                          duration: 0.5,
+                          delay: 0.15,
+                        }}
+                        className="h-full"
+                        style={{
+                          backgroundColor: "#666CC7",
+                        }}
+                      />
+
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: "22%" }}
+                        transition={{
+                          duration: 0.5,
+                          delay: 0.25,
+                        }}
+                        className="h-full"
+                        style={{
                           backgroundColor: "#52B788",
                         }}
                       />
 
                     </div>
 
-                    <div className="mt-3 flex justify-between text-[8px] text-[#777B84]">
-                      <span>{goal.current}</span>
-                      <span>{goal.target}</span>
+                    <div className="mt-5 grid grid-cols-3">
+
+                      <p className="text-[8px] text-[#777B84]">
+                        Needs · 56%
+                      </p>
+
+                      <p className="text-center text-[8px] text-[#777B84]">
+                        Wants · 22%
+                      </p>
+
+                      <p className="text-right text-[8px] text-[#777B84]">
+                        Savings · 22%
+                      </p>
+
                     </div>
 
-                    <p className="mt-6 text-[8px] leading-5 text-[#777B84]">
-                      Keep your current savings rate and this
-                      goal stays within reach.
-                    </p>
-
                   </div>
-                ))}
 
-              </div>
-            )}
+                </motion.div>
+              )}
+
+              {/* ================= GOALS TAB ================= */}
+
+              {activeTab === "Goals" && (
+                <motion.div
+                  key="goals"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35 }}
+                  className="grid gap-3 lg:grid-cols-2"
+                >
+
+                  {goals.map((goal, index) => (
+                    <motion.div
+                      key={goal.name}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                      }}
+                      transition={{
+                        duration: 0.45,
+                        delay: index * 0.1,
+                      }}
+                      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-6"
+                    >
+
+                      <div className="flex items-start justify-between">
+
+                        <div>
+                          <p className="text-[9px] text-[#777B84]">
+                            Goal
+                          </p>
+
+                          <p className="mt-1 font-space text-[17px] text-[#F1F1F2]">
+                            {goal.name}
+                          </p>
+                        </div>
+
+                        <span className="font-space text-[12px] text-[#52B788]">
+                          {goal.progress}%
+                        </span>
+
+                      </div>
+
+                      <div className="mt-7 h-2 rounded-full bg-[#25272C]">
+
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{
+                            width: `${goal.progress}%`,
+                          }}
+                          transition={{
+                            duration: 0.7,
+                            delay: 0.15 + index * 0.1,
+                          }}
+                          className="h-full rounded-full"
+                          style={{
+                            backgroundColor: "#52B788",
+                          }}
+                        />
+
+                      </div>
+
+                      <div className="mt-3 flex justify-between text-[8px] text-[#777B84]">
+                        <span>{goal.current}</span>
+                        <span>{goal.target}</span>
+                      </div>
+
+                      <p className="mt-6 text-[8px] leading-5 text-[#777B84]">
+                        Keep your current savings rate and this
+                        goal stays within reach.
+                      </p>
+
+                    </motion.div>
+                  ))}
+
+                </motion.div>
+              )}
+
+            </AnimatePresence>
 
           </div>
-        </div>
+        </motion.div>
+
       </div>
     </section>
   );
@@ -736,8 +877,12 @@ function MetricCard({
   accent?: boolean;
 }) {
   return (
-    <div className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5">
-
+    <motion.div
+      variants={fadeUp}
+      whileHover={{ y: -3 }}
+      transition={springTransition}
+      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+    >
       <p className="text-[8px] text-[#777B84]">
         {label}
       </p>
@@ -751,8 +896,7 @@ function MetricCard({
       >
         {value}
       </p>
-
-    </div>
+    </motion.div>
   );
 }
 
@@ -770,8 +914,13 @@ function BudgetSummary({
   color: string;
 }) {
   return (
-    <div className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5">
-
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -3 }}
+      transition={springTransition}
+      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+    >
       <div className="flex items-center gap-2">
 
         <span
@@ -794,7 +943,6 @@ function BudgetSummary({
       <p className="mt-1 text-[8px] text-[#777B84]">
         {percentage}% of income
       </p>
-
-    </div>
+    </motion.div>
   );
 }

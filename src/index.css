@@ -85,3 +85,15 @@
     color: var(--color-text-primary);
   }
 }
+/* Accessibility: respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+}

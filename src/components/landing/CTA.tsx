@@ -1,4 +1,13 @@
+import { motion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
+import {
+  fadeUp,
+  fadeIn,
+  scaleIn,
+  staggerContainer,
+  viewportOnce,
+  springTransition,
+} from "../../lib/motion";
 
 export function CTA() {
   return (
@@ -8,81 +17,131 @@ export function CTA() {
     >
       <div className="mx-auto max-w-6xl px-8 py-32">
 
-        <div className="relative overflow-hidden rounded-[24px] border border-[#292B30] bg-[#111214] px-7 py-16 text-center sm:px-12 sm:py-20">
+        <motion.div
+          variants={scaleIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          whileHover={{ y: -2 }}
+          transition={springTransition}
+          className="relative overflow-hidden rounded-[24px] border border-[#292B30] bg-[#111214] px-7 py-16 text-center sm:px-12 sm:py-20"
+        >
 
           {/* Subtle background detail */}
 
-          <div className="pointer-events-none absolute left-1/2 top-0 h-[260px] w-[500px] -translate-x-1/2 rounded-full bg-[#8D83B8]/[0.035] blur-[100px]" />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={viewportOnce}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            className="pointer-events-none absolute left-1/2 top-0 h-[260px] w-[500px] -translate-x-1/2 rounded-full bg-[#8D83B8]/[0.035] blur-[100px]"
+          />
 
-          <div className="relative">
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+            className="relative"
+          >
 
             {/* LABEL */}
 
-            <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#777B84]">
+            <motion.p
+              variants={fadeUp}
+              className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#777B84]"
+            >
               Start today
-            </p>
+            </motion.p>
 
             {/* HEADLINE */}
 
-            <h2 className="mx-auto mt-6 max-w-[700px] font-space text-[42px] font-medium leading-[1.02] tracking-[-0.045em] text-[#F1F1F2] sm:text-[56px]">
+            <motion.h2
+              variants={fadeUp}
+              className="mx-auto mt-6 max-w-[700px] font-space text-[42px] font-medium leading-[1.02] tracking-[-0.045em] text-[#F1F1F2] sm:text-[56px]"
+            >
               Your money doesn't need
               <br />
               to feel complicated.
-            </h2>
+            </motion.h2>
 
             {/* DESCRIPTION */}
 
-            <p className="mx-auto mt-7 max-w-[480px] text-[12px] leading-[1.7] text-[#777B84] sm:text-[13px]">
+            <motion.p
+              variants={fadeUp}
+              className="mx-auto mt-7 max-w-[480px] text-[12px] leading-[1.7] text-[#777B84] sm:text-[13px]"
+            >
               See where your money goes, build a plan that
               feels like yours, and start making better decisions.
-            </p>
+            </motion.p>
 
             {/* CTA */}
 
-            <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <motion.div
+              variants={fadeUp}
+              className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row"
+            >
 
-              <button
+              <motion.button
                 type="button"
-                className="group flex h-11 items-center gap-3 rounded-full bg-[#F1F1F2] px-6 text-[10px] font-medium text-[#0B0C0D] transition-transform duration-200 hover:scale-[1.02]"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                className="group flex h-11 items-center gap-3 rounded-full bg-[#F1F1F2] px-6 text-[10px] font-medium text-[#0B0C0D] transition-colors duration-200 hover:bg-white"
               >
                 Start using Aurora
 
-                <ArrowRight
-                  size={14}
-                  strokeWidth={1.8}
-                  className="transition-transform duration-200 group-hover:translate-x-0.5"
-                />
+                <motion.span
+                  whileHover={{ x: 3 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex"
+                >
+                  <ArrowRight
+                    size={14}
+                    strokeWidth={1.8}
+                  />
+                </motion.span>
+              </motion.button>
 
-              </button>
-
-              <button
+              <motion.button
                 type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
                 className="flex h-11 items-center rounded-full border border-[#34373D] bg-[#17181B] px-6 text-[10px] font-medium text-[#A7ABB4] transition-colors duration-200 hover:border-[#4A4D54] hover:text-[#F1F1F2]"
               >
                 Try the live demo
-              </button>
+              </motion.button>
 
-            </div>
+            </motion.div>
 
             {/* FREE */}
 
-            <div className="mt-7 flex items-center justify-center gap-2">
+            <motion.div
+              variants={fadeIn}
+              className="mt-7 flex items-center justify-center gap-2"
+            >
 
-              <Check
-                size={12}
-                strokeWidth={1.7}
-                className="text-[#52B788]"
-              />
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={viewportOnce}
+                transition={springTransition}
+              >
+                <Check
+                  size={12}
+                  strokeWidth={1.7}
+                  className="text-[#52B788]"
+                />
+              </motion.div>
 
               <span className="text-[8px] text-[#777B84]">
                 Free to use. No paid plans.
               </span>
 
-            </div>
+            </motion.div>
 
-          </div>
+          </motion.div>
 
-        </div>
+        </motion.div>
 
       </div>
     </section>

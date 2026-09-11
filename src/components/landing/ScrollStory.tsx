@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import {
   ArrowDown,
   ArrowRight,
@@ -7,6 +8,12 @@ import {
   TrendingUp,
   Wallet,
 } from "lucide-react";
+import {
+  fadeUp,
+  staggerContainer,
+  viewportOnce,
+  springTransition,
+} from "../../lib/motion";
 
 const steps = [
   {
@@ -51,8 +58,13 @@ export function ScrollStory() {
 
         {/* HEADER */}
 
-        <div className="max-w-2xl">
-
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="max-w-2xl"
+        >
           <p className="mb-6 text-[10px] font-medium uppercase tracking-[0.22em] text-[#777B84]">
             How it works
           </p>
@@ -68,13 +80,11 @@ export function ScrollStory() {
             Aurora turns the movement of your money into a
             simple visual story.
           </p>
-
-        </div>
+        </motion.div>
 
         {/* STORY */}
 
         <div className="mt-20">
-
           {steps.map((step, index) => (
             <StoryStep
               key={step.number}
@@ -83,7 +93,6 @@ export function ScrollStory() {
               isLast={index === steps.length - 1}
             />
           ))}
-
         </div>
 
       </div>
@@ -105,14 +114,36 @@ function StoryStep({
   isLast: boolean;
 }) {
   return (
-    <div className="relative grid gap-10 pb-20 lg:grid-cols-[220px_1fr]">
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewportOnce}
+      className="relative grid gap-10 pb-20 lg:grid-cols-[220px_1fr]"
+    >
 
       {/* ================================================= */}
       {/* CONTINUOUS TIMELINE LINE */}
       {/* ================================================= */}
 
       {!isLast && (
-        <div
+        <motion.div
+          initial={{
+            scaleY: 0,
+            opacity: 0,
+          }}
+          whileInView={{
+            scaleY: 1,
+            opacity: 1,
+          }}
+          viewport={viewportOnce}
+          transition={{
+            duration: 0.9,
+            delay: 0.15,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          style={{
+            transformOrigin: "top",
+          }}
           className="
             absolute
             left-[17px]
@@ -129,7 +160,15 @@ function StoryStep({
       {/* LEFT SIDE */}
       {/* ================================================= */}
 
-      <div className="relative z-10">
+      <motion.div
+        variants={fadeUp}
+        transition={{
+          duration: 0.7,
+          delay: 0.05,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        className="relative z-10"
+      >
 
         {/* TITLE ABOVE CIRCLE */}
 
@@ -139,51 +178,120 @@ function StoryStep({
             Step {step.number}
           </p>
 
-          <h3 className="mt-2 font-space text-[22px] font-medium leading-none text-[#F1F1F2]">
+          <motion.h3
+            initial={{
+              opacity: 0,
+              x: -12,
+            }}
+            whileInView={{
+              opacity: 1,
+              x: 0,
+            }}
+            viewport={viewportOnce}
+            transition={{
+              duration: 0.5,
+              delay: 0.12,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="mt-2 font-space text-[22px] font-medium leading-none text-[#F1F1F2]"
+          >
             {step.title}
-          </h3>
+          </motion.h3>
 
         </div>
 
         {/* CIRCLE */}
 
-        <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#34373D] bg-[#0F1012]">
-
+        <motion.div
+          initial={{
+            scale: 0.6,
+            opacity: 0,
+          }}
+          whileInView={{
+            scale: 1,
+            opacity: 1,
+          }}
+          viewport={viewportOnce}
+          transition={{
+            type: "spring",
+            stiffness: 180,
+            damping: 16,
+            delay: 0.18,
+          }}
+          whileHover={{
+            scale: 1.08,
+          }}
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-[#34373D] bg-[#0F1012]"
+        >
           <span className="font-space text-[9px] text-[#A7ABB4]">
             {step.number}
           </span>
+        </motion.div>
 
-        </div>
-
-      </div>
+      </motion.div>
 
       {/* ================================================= */}
       {/* RIGHT CONTENT */}
       {/* ================================================= */}
 
-      <div className="relative z-10">
+      <motion.div
+        variants={fadeUp}
+        transition={{
+          duration: 0.75,
+          delay: 0.12,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        className="relative z-10"
+      >
 
-        <p className="max-w-[470px] text-[11px] leading-6 text-[#777B84]">
+        <motion.p
+          initial={{
+            opacity: 0,
+            y: 10,
+          }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
+          viewport={viewportOnce}
+          transition={{
+            duration: 0.5,
+            delay: 0.2,
+          }}
+          className="max-w-[470px] text-[11px] leading-6 text-[#777B84]"
+        >
           {step.description}
-        </p>
+        </motion.p>
 
-        <div className="mt-8">
-
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 20,
+            scale: 0.985,
+          }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+            scale: 1,
+          }}
+          viewport={viewportOnce}
+          transition={{
+            duration: 0.7,
+            delay: 0.25,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="mt-8"
+        >
           {index === 0 && <PaydayVisual />}
-
           {index === 1 && <SplitVisual />}
-
           {index === 2 && <LeaksVisual />}
-
           {index === 3 && <GrowthVisual />}
-
           {index === 4 && <FreedomVisual />}
+        </motion.div>
 
-        </div>
+      </motion.div>
 
-      </div>
-
-    </div>
+    </motion.div>
   );
 }
 
@@ -193,7 +301,11 @@ function StoryStep({
 
 function PaydayVisual() {
   return (
-    <div className="rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 sm:p-8">
+    <motion.div
+      whileHover={{ y: -3 }}
+      transition={springTransition}
+      className="rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 sm:p-8"
+    >
 
       <div className="flex items-center justify-between">
 
@@ -261,7 +373,17 @@ function PaydayVisual() {
 
       <div className="mt-5 flex items-center gap-2">
 
-        <div className="h-1.5 w-1.5 rounded-full bg-[#52B788]" />
+        <motion.div
+          initial={{ scale: 0 }}
+          whileInView={{ scale: 1 }}
+          viewport={viewportOnce}
+          transition={{
+            type: "spring",
+            stiffness: 200,
+            damping: 15,
+          }}
+          className="h-1.5 w-1.5 rounded-full bg-[#52B788]"
+        />
 
         <span className="text-[8px] text-[#777B84]">
           A clean starting point for the month.
@@ -269,7 +391,7 @@ function PaydayVisual() {
 
       </div>
 
-    </div>
+    </motion.div>
   );
 }
 
@@ -279,7 +401,11 @@ function PaydayVisual() {
 
 function SplitVisual() {
   return (
-    <div className="rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 sm:p-8">
+    <motion.div
+      whileHover={{ y: -3 }}
+      transition={springTransition}
+      className="rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 sm:p-8"
+    >
 
       <div className="flex items-center justify-between">
 
@@ -297,7 +423,16 @@ function SplitVisual() {
 
         <div className="h-3 overflow-hidden rounded-full bg-[#25272C]">
 
-          <div className="flex h-full">
+          <motion.div
+            initial={{ width: 0 }}
+            whileInView={{ width: "100%" }}
+            viewport={viewportOnce}
+            transition={{
+              duration: 0.9,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="flex h-full"
+          >
 
             <div
               className="h-full"
@@ -323,13 +458,19 @@ function SplitVisual() {
               }}
             />
 
-          </div>
+          </motion.div>
 
         </div>
 
       </div>
 
-      <div className="mt-6 grid grid-cols-3 gap-3">
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewportOnce}
+        className="mt-6 grid grid-cols-3 gap-3"
+      >
 
         <StoryAllocation
           label="Needs"
@@ -349,9 +490,9 @@ function SplitVisual() {
           color="#52B788"
         />
 
-      </div>
+      </motion.div>
 
-    </div>
+    </motion.div>
   );
 }
 
@@ -361,7 +502,11 @@ function SplitVisual() {
 
 function LeaksVisual() {
   return (
-    <div className="rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 sm:p-8">
+    <motion.div
+      whileHover={{ y: -3 }}
+      transition={springTransition}
+      className="rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 sm:p-8"
+    >
 
       <div className="flex items-center justify-between">
 
@@ -385,7 +530,13 @@ function LeaksVisual() {
 
       </div>
 
-      <div className="mt-6 space-y-2">
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewportOnce}
+        className="mt-6 space-y-2"
+      >
 
         <LeakRow
           name="Netflix"
@@ -403,9 +554,24 @@ function LeaksVisual() {
           amount="₹299"
         />
 
-      </div>
+      </motion.div>
 
-      <div className="mt-5 rounded-[10px] border border-[#493A3A] bg-[#151315] p-4">
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: 10,
+        }}
+        whileInView={{
+          opacity: 1,
+          y: 0,
+        }}
+        viewport={viewportOnce}
+        transition={{
+          duration: 0.5,
+          delay: 0.35,
+        }}
+        className="mt-5 rounded-[10px] border border-[#493A3A] bg-[#151315] p-4"
+      >
 
         <div className="flex items-start gap-3">
 
@@ -426,9 +592,9 @@ function LeaksVisual() {
 
         </div>
 
-      </div>
+      </motion.div>
 
-    </div>
+    </motion.div>
   );
 }
 
@@ -438,7 +604,11 @@ function LeaksVisual() {
 
 function GrowthVisual() {
   return (
-    <div className="rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 sm:p-8">
+    <motion.div
+      whileHover={{ y: -3 }}
+      transition={springTransition}
+      className="rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 sm:p-8"
+    >
 
       <div className="flex items-center justify-between">
 
@@ -478,11 +648,15 @@ function GrowthVisual() {
 
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#292B30]">
 
-          <div
-            className="h-full rounded-full bg-[#52B788]"
-            style={{
-              width: "48%",
+          <motion.div
+            initial={{ width: 0 }}
+            whileInView={{ width: "48%" }}
+            viewport={viewportOnce}
+            transition={{
+              duration: 0.8,
+              ease: [0.22, 1, 0.36, 1],
             }}
+            className="h-full rounded-full bg-[#52B788]"
           />
 
         </div>
@@ -497,7 +671,22 @@ function GrowthVisual() {
 
       </div>
 
-      <div className="mt-7 flex items-center gap-2">
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: 8,
+        }}
+        whileInView={{
+          opacity: 1,
+          y: 0,
+        }}
+        viewport={viewportOnce}
+        transition={{
+          delay: 0.45,
+          duration: 0.4,
+        }}
+        className="mt-7 flex items-center gap-2"
+      >
 
         <TrendingUp
           size={13}
@@ -509,9 +698,9 @@ function GrowthVisual() {
           Your goal is getting closer.
         </span>
 
-      </div>
+      </motion.div>
 
-    </div>
+    </motion.div>
   );
 }
 
@@ -521,9 +710,19 @@ function GrowthVisual() {
 
 function FreedomVisual() {
   return (
-    <div className="rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 sm:p-8">
+    <motion.div
+      whileHover={{ y: -3 }}
+      transition={springTransition}
+      className="rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 sm:p-8"
+    >
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewportOnce}
+        className="grid gap-3 sm:grid-cols-3"
+      >
 
         <FreedomMetric
           label="Balance"
@@ -542,13 +741,43 @@ function FreedomVisual() {
           purple
         />
 
-      </div>
+      </motion.div>
 
-      <div className="mt-5 rounded-[12px] border border-[#292B30] bg-[#0F1012] p-5">
+      <motion.div
+        initial={{
+          opacity: 0,
+          scale: 0.98,
+        }}
+        whileInView={{
+          opacity: 1,
+          scale: 1,
+        }}
+        viewport={viewportOnce}
+        transition={{
+          duration: 0.5,
+          delay: 0.3,
+        }}
+        className="mt-5 rounded-[12px] border border-[#292B30] bg-[#0F1012] p-5"
+      >
 
         <div className="flex items-center gap-3">
 
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[#355342] bg-[#17241E]">
+          <motion.div
+            initial={{
+              scale: 0,
+            }}
+            whileInView={{
+              scale: 1,
+            }}
+            viewport={viewportOnce}
+            transition={{
+              type: "spring",
+              stiffness: 180,
+              damping: 14,
+              delay: 0.45,
+            }}
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#355342] bg-[#17241E]"
+          >
 
             <Check
               size={14}
@@ -556,7 +785,7 @@ function FreedomVisual() {
               className="text-[#52B788]"
             />
 
-          </div>
+          </motion.div>
 
           <div>
 
@@ -572,7 +801,7 @@ function FreedomVisual() {
 
         </div>
 
-      </div>
+      </motion.div>
 
       <div className="mt-5 flex items-center justify-between">
 
@@ -580,15 +809,22 @@ function FreedomVisual() {
           Next month starts here
         </span>
 
-        <ArrowRight
-          size={14}
-          strokeWidth={1.5}
-          className="text-[#777B84]"
-        />
+        <motion.div
+          whileHover={{
+            x: 4,
+          }}
+          transition={springTransition}
+        >
+          <ArrowRight
+            size={14}
+            strokeWidth={1.5}
+            className="text-[#777B84]"
+          />
+        </motion.div>
 
       </div>
 
-    </div>
+    </motion.div>
   );
 }
 
@@ -606,7 +842,14 @@ function StoryAllocation({
   color: string;
 }) {
   return (
-    <div className="rounded-[10px] border border-[#292B30] bg-[#0F1012] p-4">
+    <motion.div
+      variants={fadeUp}
+      whileHover={{
+        y: -2,
+      }}
+      transition={springTransition}
+      className="rounded-[10px] border border-[#292B30] bg-[#0F1012] p-4"
+    >
 
       <div className="flex items-center gap-2">
 
@@ -627,7 +870,7 @@ function StoryAllocation({
         {value}
       </p>
 
-    </div>
+    </motion.div>
   );
 }
 
@@ -645,7 +888,14 @@ function LeakRow({
   warning?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-[10px] border border-[#292B30] bg-[#0F1012] px-4 py-3">
+    <motion.div
+      variants={fadeUp}
+      whileHover={{
+        x: 3,
+      }}
+      transition={springTransition}
+      className="flex items-center justify-between rounded-[10px] border border-[#292B30] bg-[#0F1012] px-4 py-3"
+    >
 
       <div className="flex items-center gap-3">
 
@@ -667,7 +917,7 @@ function LeakRow({
         {amount}
       </span>
 
-    </div>
+    </motion.div>
   );
 }
 
@@ -697,7 +947,14 @@ function FreedomMetric({
   }
 
   return (
-    <div className="rounded-[12px] border border-[#292B30] bg-[#0F1012] p-4">
+    <motion.div
+      variants={fadeUp}
+      whileHover={{
+        y: -2,
+      }}
+      transition={springTransition}
+      className="rounded-[12px] border border-[#292B30] bg-[#0F1012] p-4"
+    >
 
       <p className="text-[8px] text-[#777B84]">
         {label}
@@ -709,6 +966,6 @@ function FreedomMetric({
         {value}
       </p>
 
-    </div>
+    </motion.div>
   );
 }

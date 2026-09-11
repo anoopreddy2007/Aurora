@@ -1,5 +1,11 @@
 import { useState } from "react";
-
+import { motion } from "framer-motion";
+import {
+  fadeUp,
+  scaleIn,
+  staggerContainer,
+  viewportOnce,
+} from "../../lib/motion";
 type Allocation = {
   needs: number;
   wants: number;
@@ -107,7 +113,13 @@ export function BudgetAllocator() {
 
         {/* HEADER */}
 
-        <div className="max-w-[620px]">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="max-w-[620px]"
+        >
           <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#777B84]">
             Budget allocator
           </p>
@@ -123,19 +135,28 @@ export function BudgetAllocator() {
             instantly. Move the sliders to find an allocation
             that feels right for you.
           </p>
-        </div>
+        </motion.div>
 
         {/* MAIN CARD */}
 
-        <div className="mt-16 grid overflow-hidden rounded-[22px] border border-[#292B30] bg-[#111214] lg:grid-cols-2">
+        <motion.div
+          variants={scaleIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="mt-16 grid overflow-hidden rounded-[22px] border border-[#292B30] bg-[#111214] lg:grid-cols-2"
+        >
 
           {/* LEFT — SLIDERS */}
 
-          <div className="border-b border-[#292B30] p-7 sm:p-9 lg:border-b-0 lg:border-r">
+          <motion.div
+            variants={staggerContainer}
+            className="border-b border-[#292B30] p-7 sm:p-9 lg:border-b-0 lg:border-r"
+          >
 
             {/* MONTHLY INCOME */}
 
-            <div>
+            <motion.div variants={fadeUp}>
               <p className="text-[9px] text-[#777B84]">
                 Monthly income
               </p>
@@ -143,13 +164,12 @@ export function BudgetAllocator() {
               <p className="mt-3 font-space text-[30px] font-medium tracking-[-0.04em] text-[#F1F1F2]">
                 ₹80,000
               </p>
-            </div>
+            </motion.div>
 
             {/* SLIDERS */}
 
             <div className="mt-12 space-y-8">
-
-              {categories.map((category) => {
+              {categories.map((category, index) => {
                 const value = allocation[category.key];
 
                 const amount = Math.round(
@@ -157,7 +177,14 @@ export function BudgetAllocator() {
                 );
 
                 return (
-                  <div key={category.key}>
+                  <motion.div
+                    key={category.key}
+                    variants={fadeUp}
+                    transition={{
+                      duration: 0.5,
+                      delay: index * 0.08,
+                    }}
+                  >
 
                     {/* LABEL */}
 
@@ -175,9 +202,14 @@ export function BudgetAllocator() {
                         </span>
                       </div>
 
-                      <span className="font-space text-[13px] font-semibold text-[#F1F1F2]">
+                      <motion.span
+                        key={value}
+                        initial={{ opacity: 0.5 }}
+                        animate={{ opacity: 1 }}
+                        className="font-space text-[13px] font-semibold text-[#F1F1F2]"
+                      >
                         {value}%
-                      </span>
+                      </motion.span>
                     </div>
 
                     {/* SLIDER */}
@@ -190,10 +222,14 @@ export function BudgetAllocator() {
 
                       {/* FILLED TRACK */}
 
-                      <div
-                        className="absolute left-0 top-1/2 h-[5px] -translate-y-1/2 rounded-full transition-all duration-150"
+                      <motion.div
+                        animate={{ width: `${value}%` }}
+                        transition={{
+                          duration: 0.2,
+                          ease: "easeOut",
+                        }}
+                        className="absolute left-0 top-1/2 h-[5px] -translate-y-1/2 rounded-full"
                         style={{
-                          width: `${value}%`,
                           backgroundColor: category.color,
                         }}
                       />
@@ -216,7 +252,6 @@ export function BudgetAllocator() {
                           accentColor: category.color,
                         }}
                       />
-
                     </div>
 
                     {/* RANGE INFORMATION */}
@@ -224,36 +259,50 @@ export function BudgetAllocator() {
                     <div className="flex justify-between text-[7px] text-[#55585F]">
                       <span>0%</span>
 
-                      <span>
+                      <motion.span
+                        key={`${category.key}-${amount}`}
+                        initial={{ opacity: 0.5 }}
+                        animate={{ opacity: 1 }}
+                      >
                         ₹{amount.toLocaleString("en-IN")}
-                      </span>
+                      </motion.span>
 
                       <span>100%</span>
                     </div>
 
-                  </div>
+                  </motion.div>
                 );
               })}
-
             </div>
 
             {/* TOTAL */}
 
-            <div className="mt-10 flex items-center justify-between border-t border-[#292B30] pt-5">
+            <motion.div
+              variants={fadeUp}
+              className="mt-10 flex items-center justify-between border-t border-[#292B30] pt-5"
+            >
               <span className="text-[9px] text-[#777B84]">
                 Total allocation
               </span>
 
-              <span className="font-space text-[11px] font-medium text-[#F1F1F2]">
+              <motion.span
+                key={totalAllocated}
+                initial={{ opacity: 0.5 }}
+                animate={{ opacity: 1 }}
+                className="font-space text-[11px] font-medium text-[#F1F1F2]"
+              >
                 {totalAllocated}%
-              </span>
-            </div>
+              </motion.span>
+            </motion.div>
 
-          </div>
+          </motion.div>
 
           {/* RIGHT — CHART */}
 
-          <div className="flex flex-col justify-center p-7 sm:p-9">
+          <motion.div
+            variants={fadeUp}
+            className="flex flex-col justify-center p-7 sm:p-9"
+          >
 
             <div>
               <p className="text-[9px] uppercase tracking-[0.16em] text-[#777B84]">
@@ -289,7 +338,7 @@ export function BudgetAllocator() {
                   {/* NEEDS */}
 
                   {allocation.needs > 0 && (
-                    <circle
+                    <motion.circle
                       cx="110"
                       cy="110"
                       r="78"
@@ -297,16 +346,22 @@ export function BudgetAllocator() {
                       stroke="#52B788"
                       strokeWidth="22"
                       strokeLinecap="round"
-                      strokeDasharray={`${(allocation.needs / 100) * 490} 490`}
-                      strokeDashoffset="0"
-                      className="transition-all duration-300"
+                      animate={{
+                        strokeDasharray: `${
+                          (allocation.needs / 100) * 490
+                        } 490`,
+                      }}
+                      transition={{
+                        duration: 0.35,
+                        ease: "easeOut",
+                      }}
                     />
                   )}
 
                   {/* WANTS */}
 
                   {allocation.wants > 0 && (
-                    <circle
+                    <motion.circle
                       cx="110"
                       cy="110"
                       r="78"
@@ -314,19 +369,25 @@ export function BudgetAllocator() {
                       stroke="#666CC7"
                       strokeWidth="22"
                       strokeLinecap="round"
-                      strokeDasharray={`${(allocation.wants / 100) * 490} 490`}
-                      strokeDashoffset={`${-(
-                        (allocation.needs / 100) *
-                        490
-                      )}`}
-                      className="transition-all duration-300"
+                      animate={{
+                        strokeDasharray: `${
+                          (allocation.wants / 100) * 490
+                        } 490`,
+                        strokeDashoffset: `${
+                          -(allocation.needs / 100) * 490
+                        }`,
+                      }}
+                      transition={{
+                        duration: 0.35,
+                        ease: "easeOut",
+                      }}
                     />
                   )}
 
                   {/* SAVINGS */}
 
                   {allocation.savings > 0 && (
-                    <circle
+                    <motion.circle
                       cx="110"
                       cy="110"
                       r="78"
@@ -334,14 +395,22 @@ export function BudgetAllocator() {
                       stroke="#7C83FF"
                       strokeWidth="22"
                       strokeLinecap="round"
-                      strokeDasharray={`${(allocation.savings / 100) * 490} 490`}
-                      strokeDashoffset={`${-(
-                        ((allocation.needs +
-                          allocation.wants) /
-                          100) *
-                        490
-                      )}`}
-                      className="transition-all duration-300"
+                      animate={{
+                        strokeDasharray: `${
+                          (allocation.savings / 100) * 490
+                        } 490`,
+                        strokeDashoffset: `${
+                          -(
+                            (allocation.needs +
+                              allocation.wants) /
+                            100
+                          ) * 490
+                        }`,
+                      }}
+                      transition={{
+                        duration: 0.35,
+                        ease: "easeOut",
+                      }}
                     />
                   )}
 
@@ -364,11 +433,17 @@ export function BudgetAllocator() {
 
             {/* LEGEND */}
 
-            <div className="mt-10 space-y-4">
+            <motion.div
+              variants={staggerContainer}
+              className="mt-10 space-y-4"
+            >
 
               {/* NEEDS */}
 
-              <div className="flex items-center justify-between">
+              <motion.div
+                variants={fadeUp}
+                className="flex items-center justify-between"
+              >
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-[#52B788]" />
 
@@ -386,11 +461,14 @@ export function BudgetAllocator() {
                     {allocation.needs}%
                   </span>
                 </div>
-              </div>
+              </motion.div>
 
               {/* WANTS */}
 
-              <div className="flex items-center justify-between">
+              <motion.div
+                variants={fadeUp}
+                className="flex items-center justify-between"
+              >
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-[#666CC7]" />
 
@@ -408,11 +486,14 @@ export function BudgetAllocator() {
                     {allocation.wants}%
                   </span>
                 </div>
-              </div>
+              </motion.div>
 
               {/* SAVINGS */}
 
-              <div className="flex items-center justify-between">
+              <motion.div
+                variants={fadeUp}
+                className="flex items-center justify-between"
+              >
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-[#7C83FF]" />
 
@@ -430,14 +511,13 @@ export function BudgetAllocator() {
                     {allocation.savings}%
                   </span>
                 </div>
-              </div>
+              </motion.div>
 
-            </div>
+            </motion.div>
 
-          </div>
+          </motion.div>
 
-        </div>
-
+        </motion.div>
       </div>
     </section>
   );

@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import {
   ArrowUpRight,
   Bell,
@@ -7,6 +8,12 @@ import {
   TrendingUp,
   Utensils,
 } from "lucide-react";
+import {
+  fadeUp,
+  staggerContainer,
+  viewportOnce,
+  springTransition,
+} from "../../lib/motion";
 
 export function BentoFeatures() {
   return (
@@ -18,7 +25,13 @@ export function BentoFeatures() {
 
         {/* Section heading */}
 
-        <div className="max-w-2xl">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="max-w-2xl"
+        >
           <p className="mb-6 text-[10px] font-medium uppercase tracking-[0.22em] text-[#777B84]">
             Everything in one place
           </p>
@@ -33,18 +46,23 @@ export function BentoFeatures() {
             Aurora turns the little things you usually overlook
             into information you can actually use.
           </p>
-        </div>
+        </motion.div>
 
         {/* Bento grid */}
 
-        <div className="mt-16 grid gap-3 lg:grid-cols-3">
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="mt-16 grid gap-3 lg:grid-cols-3"
+        >
 
           {/* ================================================= */}
           {/* SUBSCRIPTION TRACKER — LARGE */}
           {/* ================================================= */}
 
-          <div className="group relative overflow-hidden rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 lg:col-span-2">
-
+          <BentoCard className="lg:col-span-2">
             <div className="relative z-10">
 
               <div className="flex items-start justify-between">
@@ -74,7 +92,10 @@ export function BentoFeatures() {
 
               {/* Subscription chips */}
 
-              <div className="mt-8 grid gap-2 sm:grid-cols-3">
+              <motion.div
+                variants={staggerContainer}
+                className="mt-8 grid gap-2 sm:grid-cols-3"
+              >
 
                 <Subscription
                   name="Netflix"
@@ -92,7 +113,7 @@ export function BentoFeatures() {
                   amount="₹299"
                 />
 
-              </div>
+              </motion.div>
 
               {/* Total */}
 
@@ -109,14 +130,13 @@ export function BentoFeatures() {
               </div>
 
             </div>
-
-          </div>
+          </BentoCard>
 
           {/* ================================================= */}
           {/* SAVINGS GOALS */}
           {/* ================================================= */}
 
-          <div className="relative overflow-hidden rounded-[18px] border border-[#292B30] bg-[#17181B] p-6">
+          <BentoCard>
 
             <div className="flex items-start justify-between">
 
@@ -138,7 +158,10 @@ export function BentoFeatures() {
 
             </div>
 
-            <div className="mt-8 space-y-5">
+            <motion.div
+              variants={staggerContainer}
+              className="mt-8 space-y-5"
+            >
 
               <Goal
                 name="Goa trip"
@@ -161,15 +184,15 @@ export function BentoFeatures() {
                 progress={48}
               />
 
-            </div>
+            </motion.div>
 
-          </div>
+          </BentoCard>
 
           {/* ================================================= */}
           {/* AUTO CATEGORIZE */}
           {/* ================================================= */}
 
-          <div className="relative overflow-hidden rounded-[18px] border border-[#292B30] bg-[#17181B] p-6">
+          <BentoCard>
 
             <div className="flex items-start justify-between">
 
@@ -193,21 +216,38 @@ export function BentoFeatures() {
 
             {/* Transaction */}
 
-            <div className="mt-8 rounded-[12px] border border-[#292B30] bg-[#0F1012] p-4">
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 12,
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
+              viewport={viewportOnce}
+              transition={{
+                duration: 0.5,
+              }}
+              className="mt-8 rounded-[12px] border border-[#292B30] bg-[#0F1012] p-4"
+            >
 
               <div className="flex items-center justify-between">
 
                 <div className="flex items-center gap-3">
 
                   <div className="flex h-8 w-8 items-center justify-center rounded-[8px] bg-[#1D2024]">
+
                     <Utensils
                       size={13}
                       strokeWidth={1.5}
                       className="text-[#A7ABB4]"
                     />
+
                   </div>
 
                   <div>
+
                     <p className="text-[9px] text-[#F1F1F2]">
                       Swiggy
                     </p>
@@ -215,6 +255,7 @@ export function BentoFeatures() {
                     <p className="mt-0.5 text-[7px] text-[#777B84]">
                       ₹420
                     </p>
+
                   </div>
 
                 </div>
@@ -240,9 +281,22 @@ export function BentoFeatures() {
 
               </div>
 
-            </div>
+            </motion.div>
 
-            <div className="mt-4 flex items-center gap-2">
+            <motion.div
+              initial={{
+                opacity: 0,
+              }}
+              whileInView={{
+                opacity: 1,
+              }}
+              viewport={viewportOnce}
+              transition={{
+                delay: 0.25,
+                duration: 0.4,
+              }}
+              className="mt-4 flex items-center gap-2"
+            >
 
               <Check
                 size={12}
@@ -253,19 +307,20 @@ export function BentoFeatures() {
                 Automatically categorized
               </span>
 
-            </div>
+            </motion.div>
 
-          </div>
+          </BentoCard>
 
           {/* ================================================= */}
           {/* WEEKLY INSIGHT */}
           {/* ================================================= */}
 
-          <div className="relative overflow-hidden rounded-[18px] border border-[#292B30] bg-[#17181B] p-6">
+          <BentoCard>
 
             <div className="flex items-start justify-between">
 
               <div>
+
                 <p className="text-[9px] uppercase tracking-[0.12em] text-[#777B84]">
                   Weekly insight
                 </p>
@@ -273,6 +328,7 @@ export function BentoFeatures() {
                 <h3 className="mt-2 font-space text-[19px] text-[#F1F1F2]">
                   A little context goes a long way.
                 </h3>
+
               </div>
 
               <TrendingUp
@@ -301,35 +357,48 @@ export function BentoFeatures() {
 
                 {[35, 48, 42, 65, 52, 72, 88].map(
                   (height, index) => (
-                    <div
+                    <motion.div
                       key={index}
+                      initial={{
+                        height: 0,
+                        opacity: 0,
+                      }}
+                      whileInView={{
+                        height: `${height}px`,
+                        opacity: 1,
+                      }}
+                      viewport={viewportOnce}
+                      transition={{
+                        duration: 0.45,
+                        delay: index * 0.06,
+                      }}
                       className="flex-1 rounded-t-[2px]"
                       style={{
-                        height: `${height}px`,
                         backgroundColor:
                           index === 6
                             ? "#52B788"
                             : "#444A54",
                       }}
                     />
-                  ),
+                  )
                 )}
 
               </div>
 
             </div>
 
-          </div>
+          </BentoCard>
 
           {/* ================================================= */}
           {/* SPENDING ALERT */}
           {/* ================================================= */}
 
-          <div className="relative overflow-hidden rounded-[18px] border border-[#292B30] bg-[#17181B] p-6">
+          <BentoCard>
 
             <div className="flex items-start justify-between">
 
               <div>
+
                 <p className="text-[9px] uppercase tracking-[0.12em] text-[#777B84]">
                   Spending alert
                 </p>
@@ -337,6 +406,7 @@ export function BentoFeatures() {
                 <h3 className="mt-2 font-space text-[19px] text-[#F1F1F2]">
                   Catch overspending early.
                 </h3>
+
               </div>
 
               <Bell
@@ -370,11 +440,19 @@ export function BentoFeatures() {
 
               <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-[#292B30]">
 
-                <div
-                  className="h-full rounded-full bg-[#D6A85F]"
-                  style={{
+                <motion.div
+                  initial={{
+                    width: 0,
+                  }}
+                  whileInView={{
                     width: "80%",
                   }}
+                  viewport={viewportOnce}
+                  transition={{
+                    duration: 0.7,
+                    ease: "easeOut",
+                  }}
+                  className="h-full rounded-full bg-[#D6A85F]"
                 />
 
               </div>
@@ -393,13 +471,13 @@ export function BentoFeatures() {
 
             </div>
 
-          </div>
+          </BentoCard>
 
           {/* ================================================= */}
           {/* NET WORTH TREND — LARGE */}
           {/* ================================================= */}
 
-          <div className="relative overflow-hidden rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 lg:col-span-2">
+          <BentoCard className="lg:col-span-2">
 
             <div className="flex items-start justify-between">
 
@@ -448,32 +526,68 @@ export function BentoFeatures() {
                 {/* Grid lines */}
 
                 <div className="absolute left-0 right-0 top-1/4 border-t border-[#202226]" />
-
                 <div className="absolute left-0 right-0 top-2/4 border-t border-[#202226]" />
-
                 <div className="absolute left-0 right-0 top-3/4 border-t border-[#202226]" />
 
-                {/* Line */}
+                {/* Animated line */}
 
                 <svg
                   viewBox="0 0 1000 150"
                   className="absolute inset-0 h-full w-full overflow-visible"
                   preserveAspectRatio="none"
                 >
-                  <polyline
+
+                  <motion.polyline
                     points="0,126 100,119 200,123 300,100 400,105 500,82 600,88 700,65 800,71 900,44 1000,25"
                     fill="none"
                     stroke="#7C83FF"
                     strokeWidth="2"
                     vectorEffect="non-scaling-stroke"
+                    strokeDasharray="1200"
+                    strokeDashoffset="1200"
+                    initial={{
+                      strokeDashoffset: 1200,
+                      opacity: 0,
+                    }}
+                    whileInView={{
+                      strokeDashoffset: 0,
+                      opacity: 1,
+                    }}
+                    viewport={viewportOnce}
+                    transition={{
+                      strokeDashoffset: {
+                        duration: 1.8,
+                        ease: [0.22, 1, 0.36, 1],
+                      },
+                      opacity: {
+                        duration: 0.2,
+                      },
+                    }}
                   />
 
-                  <circle
+                  {/* Endpoint */}
+
+                  <motion.circle
                     cx="1000"
                     cy="25"
                     r="4"
                     fill="#7C83FF"
+                    initial={{
+                      scale: 0,
+                      opacity: 0,
+                    }}
+                    whileInView={{
+                      scale: 1,
+                      opacity: 1,
+                    }}
+                    viewport={viewportOnce}
+                    transition={{
+                      duration: 0.35,
+                      delay: 1.6,
+                      ease: "easeOut",
+                    }}
                   />
+
                 </svg>
 
               </div>
@@ -489,11 +603,37 @@ export function BentoFeatures() {
 
             </div>
 
-          </div>
+          </BentoCard>
 
-        </div>
+        </motion.div>
       </div>
     </section>
+  );
+}
+
+/* ================================================= */
+/* BENTO CARD */
+/* ================================================= */
+
+function BentoCard({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      variants={fadeUp}
+      whileHover={{
+        y: -4,
+        borderColor: "#34373D",
+      }}
+      transition={springTransition}
+      className={`group relative overflow-hidden rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 ${className}`}
+    >
+      {children}
+    </motion.div>
   );
 }
 
@@ -511,13 +651,19 @@ function Subscription({
   warning?: boolean;
 }) {
   return (
-    <div
+    <motion.div
+      variants={fadeUp}
+      whileHover={{
+        y: -2,
+      }}
+      transition={springTransition}
       className={`rounded-[10px] border p-4 ${
         warning
           ? "border-[#493A3A] bg-[#171416]"
           : "border-[#292B30] bg-[#0F1012]"
       }`}
     >
+
       <div className="flex items-center justify-between">
 
         <p className="text-[9px] text-[#F1F1F2]">
@@ -544,7 +690,7 @@ function Subscription({
         </p>
       )}
 
-    </div>
+    </motion.div>
   );
 }
 
@@ -564,7 +710,13 @@ function Goal({
   progress: number;
 }) {
   return (
-    <div>
+    <motion.div
+      variants={fadeUp}
+      whileHover={{
+        x: 2,
+      }}
+      transition={springTransition}
+    >
 
       <div className="flex items-center justify-between">
 
@@ -580,15 +732,23 @@ function Goal({
 
       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#292B30]">
 
-        <div
-          className="h-full rounded-full bg-[#52B788]"
-          style={{
+        <motion.div
+          initial={{
+            width: 0,
+          }}
+          whileInView={{
             width: `${progress}%`,
           }}
+          viewport={viewportOnce}
+          transition={{
+            duration: 0.65,
+            ease: "easeOut",
+          }}
+          className="h-full rounded-full bg-[#52B788]"
         />
 
       </div>
 
-    </div>
+    </motion.div>
   );
 }
