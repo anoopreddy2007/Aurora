@@ -103,9 +103,9 @@ export function DashboardShowcase() {
   return (
     <section
       id="showcase"
-      className="border-t border-[#24262A] bg-[#070708]"
+      className="w-full overflow-hidden border-t border-[#24262A] bg-[#070708]"
     >
-      <div className="mx-auto max-w-6xl px-8 py-28">
+      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-8 sm:py-28">
 
         {/* ================= SECTION HEADING ================= */}
 
@@ -114,19 +114,19 @@ export function DashboardShowcase() {
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="max-w-2xl"
+          className="w-full max-w-2xl"
         >
-          <p className="mb-6 text-[10px] font-medium uppercase tracking-[0.22em] text-[#777B84]">
+          <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-[#777B84] sm:mb-6">
             Inside Aurora
           </p>
 
-          <h2 className="font-space text-[42px] font-medium leading-[1.03] tracking-[-0.045em] text-[#F1F1F2] sm:text-[50px]">
+          <h2 className="font-space text-[36px] font-medium leading-[1.03] tracking-[-0.045em] text-[#F1F1F2] sm:text-[50px]">
             Your money,
             <br />
             at a glance.
           </h2>
 
-          <p className="mt-7 max-w-[500px] text-[13px] leading-[1.7] text-[#A7ABB4] sm:text-sm">
+          <p className="mt-6 w-full max-w-[500px] break-words text-[12px] leading-[1.7] text-[#A7ABB4] sm:mt-7 sm:text-sm">
             One place to understand your balance, spending,
             budget and progress without digging through
             spreadsheets.
@@ -143,14 +143,14 @@ export function DashboardShowcase() {
             duration: 0.8,
             ease: [0.22, 1, 0.36, 1],
           }}
-          className="mt-16 overflow-hidden rounded-[20px] border border-[#292B30] bg-[#17181B]"
+          className="mt-12 w-full min-w-0 overflow-hidden rounded-[18px] border border-[#292B30] bg-[#17181B] sm:mt-16 sm:rounded-[20px]"
         >
 
-          {/* Dashboard header */}
+          {/* ================= DASHBOARD HEADER ================= */}
 
-          <div className="flex flex-col gap-5 border-b border-[#292B30] px-6 py-5 sm:px-7 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex min-w-0 flex-col gap-4 border-b border-[#292B30] px-4 py-4 sm:gap-5 sm:px-7 sm:py-5 lg:flex-row lg:items-center lg:justify-between">
 
-            <div>
+            <div className="min-w-0">
               <p className="font-space text-[13px] font-medium text-[#F1F1F2]">
                 Aurora
               </p>
@@ -162,33 +162,36 @@ export function DashboardShowcase() {
 
             {/* Tabs */}
 
-            <div className="flex items-center gap-1 overflow-x-auto rounded-[9px] border border-[#292B30] bg-[#0F1012] p-1">
-              {tabs.map((tab) => {
-                const isActive = activeTab === tab;
+            <div className="w-full min-w-0 overflow-x-auto rounded-[9px] border border-[#292B30] bg-[#0F1012] p-1 lg:w-auto">
+              <div className="flex min-w-max items-center gap-1">
+                {tabs.map((tab) => {
+                  const isActive = activeTab === tab;
 
-                return (
-                  <motion.button
-                    key={tab}
-                    type="button"
-                    onClick={() => setActiveTab(tab)}
-                    whileTap={{ scale: 0.96 }}
-                    transition={springTransition}
-                    className={`whitespace-nowrap rounded-[6px] px-3 py-2 text-[8px] font-medium transition-colors ${
-                      isActive
-                        ? "bg-[#292B30] text-[#F1F1F2]"
-                        : "text-[#777B84] hover:text-[#A7ABB4]"
-                    }`}
-                  >
-                    {tab}
-                  </motion.button>
-                );
-              })}
+                  return (
+                    <motion.button
+                      key={tab}
+                      type="button"
+                      onClick={() => setActiveTab(tab)}
+                      whileTap={{ scale: 0.96 }}
+                      transition={springTransition}
+                      className={`whitespace-nowrap rounded-[6px] px-3 py-2 text-[8px] font-medium transition-colors ${
+                        isActive
+                          ? "bg-[#292B30] text-[#F1F1F2]"
+                          : "text-[#777B84] hover:text-[#A7ABB4]"
+                      }`}
+                    >
+                      {tab}
+                    </motion.button>
+                  );
+                })}
+              </div>
             </div>
+
           </div>
 
           {/* ================= DASHBOARD CONTENT ================= */}
 
-          <div className="p-6 sm:p-7">
+          <div className="min-w-0 p-4 sm:p-7">
 
             <AnimatePresence mode="wait">
 
@@ -201,6 +204,7 @@ export function DashboardShowcase() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35 }}
+                  className="min-w-0"
                 >
 
                   {/* Financial metrics */}
@@ -209,7 +213,7 @@ export function DashboardShowcase() {
                     variants={staggerContainer}
                     initial="hidden"
                     animate="visible"
-                    className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+                    className="grid min-w-0 gap-3 grid-cols-2 lg:grid-cols-4"
                   >
                     <MetricCard
                       label="Total balance"
@@ -235,19 +239,22 @@ export function DashboardShowcase() {
 
                   {/* Main row */}
 
-                  <div className="mt-3 grid gap-3 lg:grid-cols-[1.2fr_0.8fr]">
+                  <div className="mt-3 grid min-w-0 gap-3 lg:grid-cols-[1.2fr_0.8fr]">
 
-                    {/* ================= SPENDING OVERVIEW ================= */}
+                    {/* Spending overview */}
 
                     <motion.div
                       initial={{ opacity: 0, y: 18 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.12 }}
-                      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+                      transition={{
+                        duration: 0.5,
+                        delay: 0.12,
+                      }}
+                      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-start justify-between gap-3">
 
-                        <div>
+                        <div className="min-w-0">
                           <p className="text-[9px] text-[#777B84]">
                             Spending overview
                           </p>
@@ -257,22 +264,23 @@ export function DashboardShowcase() {
                           </p>
                         </div>
 
-                        <span className="text-[8px] text-[#777B84]">
+                        <span className="shrink-0 text-[8px] text-[#777B84]">
                           This month
                         </span>
+
                       </div>
 
                       {/* Chart */}
 
-                      <div className="mt-7">
+                      <div className="mt-6 w-full min-w-0 sm:mt-7">
 
-                        <div className="relative flex h-[180px] items-end gap-3 border-b border-[#292B30] px-1">
+                        <div className="relative flex h-[150px] min-w-0 items-end gap-1.5 border-b border-[#292B30] px-1 sm:h-[180px] sm:gap-3">
 
                           {chartValues.map(
                             (height, index) => (
                               <div
                                 key={index}
-                                className="flex h-full flex-1 items-end"
+                                className="flex h-full min-w-0 flex-1 items-end"
                               >
                                 <motion.div
                                   initial={{
@@ -286,7 +294,8 @@ export function DashboardShowcase() {
                                   transition={{
                                     duration: 0.65,
                                     delay:
-                                      0.05 + index * 0.045,
+                                      0.05 +
+                                      index * 0.045,
                                     ease: [
                                       0.22,
                                       1,
@@ -296,7 +305,7 @@ export function DashboardShowcase() {
                                   }}
                                   className="w-full rounded-t-[3px]"
                                   style={{
-                                    minHeight: "10px",
+                                    minHeight: "8px",
                                     backgroundColor:
                                       index === 7
                                         ? "#8D83B8"
@@ -311,7 +320,7 @@ export function DashboardShowcase() {
 
                         {/* Chart labels */}
 
-                        <div className="mt-3 flex justify-between text-[7px] text-[#777B84]">
+                        <div className="mt-3 flex justify-between text-[6px] text-[#777B84] sm:text-[7px]">
                           <span>1 Oct</span>
                           <span>7 Oct</span>
                           <span>14 Oct</span>
@@ -322,15 +331,18 @@ export function DashboardShowcase() {
                       </div>
                     </motion.div>
 
-                    {/* ================= BUDGET BREAKDOWN ================= */}
+                    {/* Budget breakdown */}
 
                     <motion.div
                       initial={{ opacity: 0, y: 18 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
-                      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+                      transition={{
+                        duration: 0.5,
+                        delay: 0.2,
+                      }}
+                      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-start justify-between gap-3">
 
                         <div>
                           <p className="text-[9px] text-[#777B84]">
@@ -342,9 +354,10 @@ export function DashboardShowcase() {
                           </p>
                         </div>
 
-                        <span className="text-[8px] text-[#777B84]">
+                        <span className="shrink-0 text-[8px] text-[#777B84]">
                           Allocated
                         </span>
+
                       </div>
 
                       <motion.div
@@ -358,12 +371,12 @@ export function DashboardShowcase() {
                             key={item.label}
                             variants={fadeUp}
                           >
-                            <div className="mb-2 flex items-center justify-between">
+                            <div className="mb-2 flex items-center justify-between gap-3">
 
-                              <div className="flex items-center gap-2">
+                              <div className="flex min-w-0 items-center gap-2">
 
                                 <span
-                                  className="h-1.5 w-1.5 rounded-full"
+                                  className="h-1.5 w-1.5 shrink-0 rounded-full"
                                   style={{
                                     backgroundColor:
                                       item.color,
@@ -376,7 +389,7 @@ export function DashboardShowcase() {
 
                               </div>
 
-                              <span className="text-[8px] text-[#777B84]">
+                              <span className="shrink-0 text-[8px] text-[#777B84]">
                                 {item.percentage}%
                               </span>
 
@@ -399,6 +412,7 @@ export function DashboardShowcase() {
                                 }}
                               />
                             </div>
+
                           </motion.div>
                         ))}
                       </motion.div>
@@ -406,19 +420,22 @@ export function DashboardShowcase() {
 
                   </div>
 
-                  {/* ================= BOTTOM ROW ================= */}
+                  {/* Bottom row */}
 
-                  <div className="mt-3 grid gap-3 lg:grid-cols-2">
+                  <div className="mt-3 grid min-w-0 gap-3 lg:grid-cols-2">
 
                     {/* Transactions */}
 
                     <motion.div
                       initial={{ opacity: 0, y: 18 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.28 }}
-                      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+                      transition={{
+                        duration: 0.5,
+                        delay: 0.28,
+                      }}
+                      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between gap-3">
 
                         <p className="text-[9px] font-medium text-[#F1F1F2]">
                           Recent transactions
@@ -426,7 +443,7 @@ export function DashboardShowcase() {
 
                         <button
                           type="button"
-                          className="text-[8px] text-[#777B84] hover:text-[#A7ABB4]"
+                          className="shrink-0 text-[8px] text-[#777B84] hover:text-[#A7ABB4]"
                         >
                           View all
                         </button>
@@ -434,7 +451,6 @@ export function DashboardShowcase() {
                       </div>
 
                       <div className="mt-4">
-
                         {transactions.map(
                           (transaction, index) => (
                             <motion.div
@@ -452,30 +468,29 @@ export function DashboardShowcase() {
                                 delay:
                                   0.3 + index * 0.06,
                               }}
-                              className={`flex items-center justify-between py-3 ${
+                              className={`flex items-center justify-between gap-4 py-3 ${
                                 index !==
                                 transactions.length - 1
                                   ? "border-b border-[#292B30]"
                                   : ""
                               }`}
                             >
-                              <div>
-                                <p className="text-[9px] text-[#A7ABB4]">
+                              <div className="min-w-0">
+                                <p className="truncate text-[9px] text-[#A7ABB4]">
                                   {transaction.name}
                                 </p>
 
-                                <p className="mt-0.5 text-[7px] text-[#777B84]">
+                                <p className="mt-0.5 truncate text-[7px] text-[#777B84]">
                                   {transaction.category}
                                 </p>
                               </div>
 
-                              <span className="font-space text-[9px] text-[#F1F1F2]">
+                              <span className="shrink-0 font-space text-[9px] text-[#F1F1F2]">
                                 {transaction.amount}
                               </span>
                             </motion.div>
                           )
                         )}
-
                       </div>
                     </motion.div>
 
@@ -484,16 +499,19 @@ export function DashboardShowcase() {
                     <motion.div
                       initial={{ opacity: 0, y: 18 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.34 }}
-                      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+                      transition={{
+                        duration: 0.5,
+                        delay: 0.34,
+                      }}
+                      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between gap-3">
 
                         <p className="text-[9px] font-medium text-[#F1F1F2]">
                           Goals
                         </p>
 
-                        <span className="text-[8px] text-[#777B84]">
+                        <span className="shrink-0 text-[8px] text-[#777B84]">
                           2 active
                         </span>
 
@@ -504,13 +522,13 @@ export function DashboardShowcase() {
                         {goals.map((goal, index) => (
                           <div key={goal.name}>
 
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between gap-3">
 
-                              <p className="text-[9px] text-[#A7ABB4]">
+                              <p className="min-w-0 truncate text-[9px] text-[#A7ABB4]">
                                 {goal.name}
                               </p>
 
-                              <p className="text-[8px] text-[#777B84]">
+                              <p className="shrink-0 text-[8px] text-[#777B84]">
                                 {goal.progress}%
                               </p>
 
@@ -525,7 +543,8 @@ export function DashboardShowcase() {
                                 transition={{
                                   duration: 0.7,
                                   delay:
-                                    0.35 + index * 0.1,
+                                    0.35 +
+                                    index * 0.1,
                                   ease: "easeOut",
                                 }}
                                 className="h-full rounded-full"
@@ -549,13 +568,16 @@ export function DashboardShowcase() {
 
                   </div>
 
-                  {/* ================= INSIGHT ================= */}
+                  {/* Insight */}
 
                   <motion.div
                     initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    className="mt-3 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+                    transition={{
+                      duration: 0.5,
+                      delay: 0.4,
+                    }}
+                    className="mt-3 min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
                   >
                     <p className="text-[8px] uppercase tracking-[0.16em] text-[#777B84]">
                       Aurora insight
@@ -584,16 +606,16 @@ export function DashboardShowcase() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35 }}
-                  className="grid gap-3 lg:grid-cols-2"
+                  className="grid min-w-0 gap-3 lg:grid-cols-2"
                 >
 
-                  <div className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-6">
+                  <div className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-6">
 
                     <p className="text-[9px] text-[#777B84]">
                       Monthly spending
                     </p>
 
-                    <p className="mt-2 font-space text-[30px] text-[#F1F1F2]">
+                    <p className="mt-2 font-space text-[27px] text-[#F1F1F2] sm:text-[30px]">
                       ₹32,000
                     </p>
 
@@ -601,16 +623,16 @@ export function DashboardShowcase() {
                       8% lower than last month
                     </p>
 
-                    <div className="mt-8 space-y-5">
+                    <div className="mt-7 space-y-5 sm:mt-8">
                       {spending.map((item, index) => (
                         <div key={item.label}>
 
-                          <div className="flex justify-between">
+                          <div className="flex items-center justify-between gap-3">
                             <span className="text-[9px] text-[#A7ABB4]">
                               {item.label}
                             </span>
 
-                            <span className="text-[9px] text-[#F1F1F2]">
+                            <span className="shrink-0 text-[9px] text-[#F1F1F2]">
                               {item.amount}
                             </span>
                           </div>
@@ -639,13 +661,13 @@ export function DashboardShowcase() {
 
                   </div>
 
-                  <div className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-6">
+                  <div className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-6">
 
                     <p className="text-[9px] text-[#777B84]">
                       Spending insight
                     </p>
 
-                    <p className="mt-3 font-space text-[17px] leading-6 text-[#F1F1F2]">
+                    <p className="mt-3 font-space text-[16px] leading-6 text-[#F1F1F2] sm:text-[17px]">
                       Food spending is your second largest
                       category.
                     </p>
@@ -681,9 +703,10 @@ export function DashboardShowcase() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35 }}
+                  className="min-w-0"
                 >
 
-                  <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="grid min-w-0 gap-3 sm:grid-cols-3">
 
                     <BudgetSummary
                       label="Needs"
@@ -708,19 +731,19 @@ export function DashboardShowcase() {
 
                   </div>
 
-                  <div className="mt-3 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-6">
+                  <div className="mt-3 min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-6">
 
                     <p className="text-[9px] text-[#777B84]">
                       Current allocation
                     </p>
 
-                    <div className="mt-5 flex h-4 overflow-hidden rounded-full bg-[#25272C]">
+                    <div className="mt-5 flex h-4 min-w-0 overflow-hidden rounded-full bg-[#25272C]">
 
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: "56%" }}
                         transition={{ duration: 0.6 }}
-                        className="h-full"
+                        className="h-full shrink-0"
                         style={{
                           backgroundColor: "#7C83FF",
                         }}
@@ -733,7 +756,7 @@ export function DashboardShowcase() {
                           duration: 0.5,
                           delay: 0.15,
                         }}
-                        className="h-full"
+                        className="h-full shrink-0"
                         style={{
                           backgroundColor: "#666CC7",
                         }}
@@ -746,7 +769,7 @@ export function DashboardShowcase() {
                           duration: 0.5,
                           delay: 0.25,
                         }}
-                        className="h-full"
+                        className="h-full shrink-0"
                         style={{
                           backgroundColor: "#52B788",
                         }}
@@ -754,17 +777,17 @@ export function DashboardShowcase() {
 
                     </div>
 
-                    <div className="mt-5 grid grid-cols-3">
+                    <div className="mt-5 grid grid-cols-3 gap-2">
 
-                      <p className="text-[8px] text-[#777B84]">
+                      <p className="text-[7px] text-[#777B84] sm:text-[8px]">
                         Needs · 56%
                       </p>
 
-                      <p className="text-center text-[8px] text-[#777B84]">
+                      <p className="text-center text-[7px] text-[#777B84] sm:text-[8px]">
                         Wants · 22%
                       </p>
 
-                      <p className="text-right text-[8px] text-[#777B84]">
+                      <p className="text-right text-[7px] text-[#777B84] sm:text-[8px]">
                         Savings · 22%
                       </p>
 
@@ -784,7 +807,7 @@ export function DashboardShowcase() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35 }}
-                  className="grid gap-3 lg:grid-cols-2"
+                  className="grid min-w-0 gap-3 lg:grid-cols-2"
                 >
 
                   {goals.map((goal, index) => (
@@ -799,22 +822,22 @@ export function DashboardShowcase() {
                         duration: 0.45,
                         delay: index * 0.1,
                       }}
-                      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-6"
+                      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-6"
                     >
 
-                      <div className="flex items-start justify-between">
+                      <div className="flex items-start justify-between gap-4">
 
-                        <div>
+                        <div className="min-w-0">
                           <p className="text-[9px] text-[#777B84]">
                             Goal
                           </p>
 
-                          <p className="mt-1 font-space text-[17px] text-[#F1F1F2]">
+                          <p className="mt-1 truncate font-space text-[16px] text-[#F1F1F2] sm:text-[17px]">
                             {goal.name}
                           </p>
                         </div>
 
-                        <span className="font-space text-[12px] text-[#52B788]">
+                        <span className="shrink-0 font-space text-[12px] text-[#52B788]">
                           {goal.progress}%
                         </span>
 
@@ -829,7 +852,8 @@ export function DashboardShowcase() {
                           }}
                           transition={{
                             duration: 0.7,
-                            delay: 0.15 + index * 0.1,
+                            delay:
+                              0.15 + index * 0.1,
                           }}
                           className="h-full rounded-full"
                           style={{
@@ -881,14 +905,14 @@ function MetricCard({
       variants={fadeUp}
       whileHover={{ y: -3 }}
       transition={springTransition}
-      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
     >
-      <p className="text-[8px] text-[#777B84]">
+      <p className="truncate text-[8px] text-[#777B84]">
         {label}
       </p>
 
       <p
-        className={`mt-2 font-space text-[20px] font-medium tracking-[-0.02em] ${
+        className={`mt-2 truncate font-space text-[17px] font-medium tracking-[-0.02em] sm:text-[20px] ${
           accent
             ? "text-[#52B788]"
             : "text-[#F1F1F2]"
@@ -919,12 +943,12 @@ function BudgetSummary({
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -3 }}
       transition={springTransition}
-      className="rounded-[14px] border border-[#292B30] bg-[#0F1012] p-5"
+      className="min-w-0 rounded-[14px] border border-[#292B30] bg-[#0F1012] p-4 sm:p-5"
     >
       <div className="flex items-center gap-2">
 
         <span
-          className="h-2 w-2 rounded-full"
+          className="h-2 w-2 shrink-0 rounded-full"
           style={{
             backgroundColor: color,
           }}
@@ -936,7 +960,7 @@ function BudgetSummary({
 
       </div>
 
-      <p className="mt-3 font-space text-[19px] text-[#F1F1F2]">
+      <p className="mt-3 truncate font-space text-[18px] text-[#F1F1F2] sm:text-[19px]">
         {amount}
       </p>
 

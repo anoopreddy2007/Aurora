@@ -19,9 +19,9 @@ export function BentoFeatures() {
   return (
     <section
       id="features"
-      className="border-t border-[#24262A] bg-[#070708]"
+      className="w-full overflow-hidden border-t border-[#24262A] bg-[#070708]"
     >
-      <div className="mx-auto max-w-6xl px-8 py-28">
+      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-8 sm:py-28">
 
         {/* Section heading */}
 
@@ -30,19 +30,19 @@ export function BentoFeatures() {
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="max-w-2xl"
+          className="w-full max-w-2xl"
         >
-          <p className="mb-6 text-[10px] font-medium uppercase tracking-[0.22em] text-[#777B84]">
+          <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-[#777B84] sm:mb-6">
             Everything in one place
           </p>
 
-          <h2 className="font-space text-[42px] font-medium leading-[1.03] tracking-[-0.045em] text-[#F1F1F2] sm:text-[50px]">
+          <h2 className="font-space text-[36px] font-medium leading-[1.03] tracking-[-0.045em] text-[#F1F1F2] sm:text-[50px]">
             Small details.
             <br />
             Better decisions.
           </h2>
 
-          <p className="mt-7 max-w-[500px] text-[13px] leading-[1.7] text-[#A7ABB4] sm:text-sm">
+          <p className="mt-6 w-full max-w-[500px] break-words text-[12px] leading-[1.7] text-[#A7ABB4] sm:mt-7 sm:text-sm">
             Aurora turns the little things you usually overlook
             into information you can actually use.
           </p>
@@ -55,7 +55,7 @@ export function BentoFeatures() {
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="mt-16 grid gap-3 lg:grid-cols-3"
+          className="mt-12 grid min-w-0 gap-3 sm:mt-16 lg:grid-cols-3"
         >
 
           {/* ================================================= */}
@@ -63,16 +63,16 @@ export function BentoFeatures() {
           {/* ================================================= */}
 
           <BentoCard className="lg:col-span-2">
-            <div className="relative z-10">
+            <div className="relative z-10 min-w-0">
 
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between gap-4">
 
-                <div>
+                <div className="min-w-0">
                   <p className="text-[9px] uppercase tracking-[0.12em] text-[#777B84]">
                     Subscriptions
                   </p>
 
-                  <h3 className="mt-2 font-space text-[20px] text-[#F1F1F2]">
+                  <h3 className="mt-2 font-space text-[18px] leading-6 text-[#F1F1F2] sm:text-[20px]">
                     Know what you're paying for.
                   </h3>
                 </div>
@@ -80,7 +80,7 @@ export function BentoFeatures() {
                 <CreditCard
                   size={17}
                   strokeWidth={1.5}
-                  className="text-[#777B84]"
+                  className="shrink-0 text-[#777B84]"
                 />
 
               </div>
@@ -94,9 +94,8 @@ export function BentoFeatures() {
 
               <motion.div
                 variants={staggerContainer}
-                className="mt-8 grid gap-2 sm:grid-cols-3"
+                className="mt-7 grid gap-2 sm:mt-8 sm:grid-cols-3"
               >
-
                 <Subscription
                   name="Netflix"
                   amount="₹649"
@@ -112,21 +111,18 @@ export function BentoFeatures() {
                   name="Prime"
                   amount="₹299"
                 />
-
               </motion.div>
 
               {/* Total */}
 
-              <div className="mt-5 flex items-center justify-between border-t border-[#292B30] pt-4">
-
+              <div className="mt-5 flex items-center justify-between gap-4 border-t border-[#292B30] pt-4">
                 <span className="text-[8px] text-[#777B84]">
                   Monthly subscriptions
                 </span>
 
-                <span className="font-space text-[12px] text-[#F1F1F2]">
+                <span className="shrink-0 font-space text-[12px] text-[#F1F1F2]">
                   ₹1,067
                 </span>
-
               </div>
 
             </div>
@@ -138,14 +134,14 @@ export function BentoFeatures() {
 
           <BentoCard>
 
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-4">
 
-              <div>
+              <div className="min-w-0">
                 <p className="text-[9px] uppercase tracking-[0.12em] text-[#777B84]">
                   Savings goals
                 </p>
 
-                <h3 className="mt-2 font-space text-[19px] text-[#F1F1F2]">
+                <h3 className="mt-2 font-space text-[18px] leading-6 text-[#F1F1F2] sm:text-[19px]">
                   Give your savings somewhere to go.
                 </h3>
               </div>
@@ -153,14 +149,14 @@ export function BentoFeatures() {
               <CircleDollarSign
                 size={17}
                 strokeWidth={1.5}
-                className="text-[#777B84]"
+                className="shrink-0 text-[#777B84]"
               />
 
             </div>
 
             <motion.div
               variants={staggerContainer}
-              className="mt-8 space-y-5"
+              className="mt-7 space-y-5 sm:mt-8"
             >
 
               <Goal
@@ -194,14 +190,14 @@ export function BentoFeatures() {
 
           <BentoCard>
 
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-4">
 
-              <div>
+              <div className="min-w-0">
                 <p className="text-[9px] uppercase tracking-[0.12em] text-[#777B84]">
                   Auto-categorize
                 </p>
 
-                <h3 className="mt-2 font-space text-[19px] text-[#F1F1F2]">
+                <h3 className="mt-2 font-space text-[18px] leading-6 text-[#F1F1F2] sm:text-[19px]">
                   Less sorting. More clarity.
                 </h3>
               </div>
@@ -209,7 +205,7 @@ export function BentoFeatures() {
               <Utensils
                 size={17}
                 strokeWidth={1.5}
-                className="text-[#777B84]"
+                className="shrink-0 text-[#777B84]"
               />
 
             </div>
@@ -229,25 +225,22 @@ export function BentoFeatures() {
               transition={{
                 duration: 0.5,
               }}
-              className="mt-8 rounded-[12px] border border-[#292B30] bg-[#0F1012] p-4"
+              className="mt-7 rounded-[12px] border border-[#292B30] bg-[#0F1012] p-4 sm:mt-8"
             >
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-3">
 
-                <div className="flex items-center gap-3">
+                <div className="flex min-w-0 items-center gap-3">
 
-                  <div className="flex h-8 w-8 items-center justify-center rounded-[8px] bg-[#1D2024]">
-
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-[#1D2024]">
                     <Utensils
                       size={13}
                       strokeWidth={1.5}
                       className="text-[#A7ABB4]"
                     />
-
                   </div>
 
-                  <div>
-
+                  <div className="min-w-0">
                     <p className="text-[9px] text-[#F1F1F2]">
                       Swiggy
                     </p>
@@ -255,27 +248,26 @@ export function BentoFeatures() {
                     <p className="mt-0.5 text-[7px] text-[#777B84]">
                       ₹420
                     </p>
-
                   </div>
 
                 </div>
 
                 <ArrowUpRight
                   size={13}
-                  className="text-[#777B84]"
+                  className="shrink-0 text-[#777B84]"
                 />
 
               </div>
 
               {/* Category */}
 
-              <div className="mt-4 flex items-center justify-between">
+              <div className="mt-4 flex items-center justify-between gap-3">
 
                 <span className="text-[8px] text-[#777B84]">
                   Category
                 </span>
 
-                <span className="rounded-full border border-[#34373D] bg-[#1B1D21] px-2.5 py-1 text-[7px] text-[#A7ABB4]">
+                <span className="shrink-0 rounded-full border border-[#34373D] bg-[#1B1D21] px-2.5 py-1 text-[7px] text-[#A7ABB4]">
                   Food
                 </span>
 
@@ -300,7 +292,7 @@ export function BentoFeatures() {
 
               <Check
                 size={12}
-                className="text-[#52B788]"
+                className="shrink-0 text-[#52B788]"
               />
 
               <span className="text-[8px] text-[#777B84]">
@@ -317,15 +309,15 @@ export function BentoFeatures() {
 
           <BentoCard>
 
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-4">
 
-              <div>
+              <div className="min-w-0">
 
                 <p className="text-[9px] uppercase tracking-[0.12em] text-[#777B84]">
                   Weekly insight
                 </p>
 
-                <h3 className="mt-2 font-space text-[19px] text-[#F1F1F2]">
+                <h3 className="mt-2 font-space text-[18px] leading-6 text-[#F1F1F2] sm:text-[19px]">
                   A little context goes a long way.
                 </h3>
 
@@ -334,12 +326,12 @@ export function BentoFeatures() {
               <TrendingUp
                 size={17}
                 strokeWidth={1.5}
-                className="text-[#777B84]"
+                className="shrink-0 text-[#777B84]"
               />
 
             </div>
 
-            <div className="mt-8 rounded-[12px] border border-[#292B30] bg-[#0F1012] p-5">
+            <div className="mt-7 rounded-[12px] border border-[#292B30] bg-[#0F1012] p-4 sm:mt-8 sm:p-5">
 
               <p className="text-[8px] text-[#777B84]">
                 This week
@@ -353,7 +345,7 @@ export function BentoFeatures() {
                 less spent on food
               </p>
 
-              <div className="mt-6 flex items-end gap-1.5">
+              <div className="mt-6 flex h-[88px] items-end gap-1.5 overflow-hidden">
 
                 {[35, 48, 42, 65, 52, 72, 88].map(
                   (height, index) => (
@@ -372,7 +364,7 @@ export function BentoFeatures() {
                         duration: 0.45,
                         delay: index * 0.06,
                       }}
-                      className="flex-1 rounded-t-[2px]"
+                      className="min-w-0 flex-1 rounded-t-[2px]"
                       style={{
                         backgroundColor:
                           index === 6
@@ -395,15 +387,15 @@ export function BentoFeatures() {
 
           <BentoCard>
 
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-4">
 
-              <div>
+              <div className="min-w-0">
 
                 <p className="text-[9px] uppercase tracking-[0.12em] text-[#777B84]">
                   Spending alert
                 </p>
 
-                <h3 className="mt-2 font-space text-[19px] text-[#F1F1F2]">
+                <h3 className="mt-2 font-space text-[18px] leading-6 text-[#F1F1F2] sm:text-[19px]">
                   Catch overspending early.
                 </h3>
 
@@ -412,18 +404,18 @@ export function BentoFeatures() {
               <Bell
                 size={17}
                 strokeWidth={1.5}
-                className="text-[#777B84]"
+                className="shrink-0 text-[#777B84]"
               />
 
             </div>
 
-            <div className="mt-8 rounded-[12px] border border-[#383333] bg-[#151315] p-5">
+            <div className="mt-7 rounded-[12px] border border-[#383333] bg-[#151315] p-4 sm:mt-8 sm:p-5">
 
               <div className="flex items-start gap-3">
 
-                <div className="mt-0.5 h-2 w-2 rounded-full bg-[#D6A85F]" />
+                <div className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-[#D6A85F]" />
 
-                <div>
+                <div className="min-w-0">
 
                   <p className="text-[9px] text-[#F1F1F2]">
                     Dining out
@@ -457,13 +449,13 @@ export function BentoFeatures() {
 
               </div>
 
-              <div className="mt-2 flex justify-between">
+              <div className="mt-2 flex justify-between gap-3">
 
                 <span className="text-[7px] text-[#777B84]">
                   ₹4,000 spent
                 </span>
 
-                <span className="text-[7px] text-[#777B84]">
+                <span className="text-right text-[7px] text-[#777B84]">
                   ₹5,000 budget
                 </span>
 
@@ -479,19 +471,19 @@ export function BentoFeatures() {
 
           <BentoCard className="lg:col-span-2">
 
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-5">
 
-              <div>
+              <div className="min-w-0">
 
                 <p className="text-[9px] uppercase tracking-[0.12em] text-[#777B84]">
                   Net worth
                 </p>
 
-                <h3 className="mt-2 font-space text-[20px] text-[#F1F1F2]">
+                <h3 className="mt-2 font-space text-[18px] leading-6 text-[#F1F1F2] sm:text-[20px]">
                   See the direction, not just the number.
                 </h3>
 
-                <p className="mt-3 max-w-[380px] text-[9px] leading-5 text-[#777B84]">
+                <p className="mt-3 w-full max-w-[380px] text-[9px] leading-5 text-[#777B84]">
                   Track how your financial position changes
                   over time and understand whether you're
                   moving in the right direction.
@@ -499,13 +491,13 @@ export function BentoFeatures() {
 
               </div>
 
-              <div className="text-right">
+              <div className="shrink-0 text-right">
 
                 <p className="text-[8px] text-[#777B84]">
                   Current
                 </p>
 
-                <p className="mt-1 font-space text-[18px] text-[#52B788]">
+                <p className="mt-1 font-space text-[16px] text-[#52B788] sm:text-[18px]">
                   ₹2,84,600
                 </p>
 
@@ -519,9 +511,9 @@ export function BentoFeatures() {
 
             {/* Chart */}
 
-            <div className="mt-8">
+            <div className="mt-7 sm:mt-8">
 
-              <div className="relative h-[150px] border-b border-[#292B30]">
+              <div className="relative h-[130px] min-w-0 border-b border-[#292B30] sm:h-[150px]">
 
                 {/* Grid lines */}
 
@@ -592,7 +584,7 @@ export function BentoFeatures() {
 
               </div>
 
-              <div className="mt-3 flex justify-between text-[7px] text-[#777B84]">
+              <div className="mt-3 flex justify-between text-[6px] text-[#777B84] sm:text-[7px]">
                 <span>Jan</span>
                 <span>Mar</span>
                 <span>May</span>
@@ -630,7 +622,7 @@ function BentoCard({
         borderColor: "#34373D",
       }}
       transition={springTransition}
-      className={`group relative overflow-hidden rounded-[18px] border border-[#292B30] bg-[#17181B] p-6 ${className}`}
+      className={`group relative min-w-0 overflow-hidden rounded-[18px] border border-[#292B30] bg-[#17181B] p-5 sm:p-6 ${className}`}
     >
       {children}
     </motion.div>
@@ -657,21 +649,21 @@ function Subscription({
         y: -2,
       }}
       transition={springTransition}
-      className={`rounded-[10px] border p-4 ${
+      className={`min-w-0 rounded-[10px] border p-3.5 sm:p-4 ${
         warning
           ? "border-[#493A3A] bg-[#171416]"
           : "border-[#292B30] bg-[#0F1012]"
       }`}
     >
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
 
-        <p className="text-[9px] text-[#F1F1F2]">
+        <p className="truncate text-[9px] text-[#F1F1F2]">
           {name}
         </p>
 
         <span
-          className={`h-1.5 w-1.5 rounded-full ${
+          className={`h-1.5 w-1.5 shrink-0 rounded-full ${
             warning
               ? "bg-[#C87575]"
               : "bg-[#52B788]"
@@ -716,15 +708,16 @@ function Goal({
         x: 2,
       }}
       transition={springTransition}
+      className="min-w-0"
     >
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
 
-        <p className="text-[8px] text-[#A7ABB4]">
+        <p className="min-w-0 truncate text-[8px] text-[#A7ABB4]">
           {name}
         </p>
 
-        <p className="text-[7px] text-[#777B84]">
+        <p className="shrink-0 text-right text-[7px] text-[#777B84]">
           {amount} / {target}
         </p>
 

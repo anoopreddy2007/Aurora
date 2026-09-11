@@ -12,26 +12,18 @@ import { Footer } from "./components/landing/Footer";
 
 function App() {
   return (
-    <div className="min-h-screen bg-[#070708] text-[#F1F1F2]">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#070708] text-[#F1F1F2]">
       <Navbar />
 
-      <main>
+      <main className="w-full max-w-full overflow-x-hidden">
         <Hero />
-
         <Introduction />
-
         <BudgetAllocator />
-
         <DashboardShowcase />
-
         <BentoFeatures />
-
         <ScrollStory />
-
         <SecondaryFeatures />
-
         <Statistics />
-
         <CTA />
       </main>
 

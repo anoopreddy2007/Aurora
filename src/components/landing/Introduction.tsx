@@ -1,3 +1,13 @@
+import { motion } from "framer-motion";
+import {
+  fadeUp,
+  fadeIn,
+  scaleIn,
+  staggerContainer,
+  viewportOnce,
+  springTransition,
+} from "../../lib/motion";
+
 const spending = [
   {
     label: "Rent",
@@ -23,52 +33,88 @@ const spending = [
 
 export function Introduction() {
   return (
-    <section id="product" className="bg-background">
-      <div className="mx-auto grid max-w-6xl items-center gap-20 px-8 py-28 lg:grid-cols-[1fr_1.15fr]">
-        {/* Left content */}
-        <div className="max-w-[480px]">
-          <p className="mb-7 text-[10px] font-medium uppercase tracking-[0.22em] text-text-muted">
-            Why Aurora
-          </p>
+    <section id="product" className="w-full overflow-hidden bg-background">
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-14 px-4 py-20 sm:gap-20 sm:px-8 sm:py-28 lg:grid-cols-[1fr_1.15fr]">
 
-          <h2 className="font-space text-[42px] font-medium leading-[1.03] tracking-[-0.045em] text-text-primary sm:text-[48px]">
+        {/* LEFT CONTENT */}
+
+        <motion.div
+          className="w-full min-w-0 max-w-[480px]"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+        >
+          <motion.p
+            variants={fadeUp}
+            className="mb-6 text-[10px] font-medium uppercase tracking-[0.22em] text-text-muted sm:mb-7"
+          >
+            Why Aurora
+          </motion.p>
+
+          <motion.h2
+            variants={fadeUp}
+            className="font-space text-[36px] font-medium leading-[1.03] tracking-[-0.045em] text-text-primary sm:text-[48px]"
+          >
             Budgeting shouldn't
             <br />
             feel like homework.
-          </h2>
+          </motion.h2>
 
-          <p className="mt-7 max-w-[440px] text-[13px] leading-[1.7] text-text-secondary sm:text-sm">
+          <motion.p
+            variants={fadeUp}
+            className="mt-6 w-full max-w-full break-words text-[13px] leading-[1.7] text-text-secondary sm:mt-7 sm:max-w-[440px] sm:text-sm"
+          >
             See where your money goes, understand what matters,
             <br className="hidden sm:block" />
             and build a plan that actually feels like yours.
-          </p>
+          </motion.p>
 
-          <p className="mt-7 text-sm font-medium text-accent-green">
+          <motion.p
+            variants={fadeUp}
+            className="mt-6 text-sm font-medium text-accent-green sm:mt-7"
+          >
             Make spending visible. Make progress easier.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
-        {/* Dashboard */}
-        <div className="w-full lg:justify-self-end">
-          <div className="rounded-[18px] border border-border-aurora bg-surface p-7">
-            {/* Top metrics */}
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-[9px] text-text-muted">
+        {/* DASHBOARD */}
+
+        <motion.div
+          className="w-full min-w-0 lg:justify-self-end"
+          variants={scaleIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+        >
+          <motion.div
+            whileHover={{ y: -3 }}
+            transition={springTransition}
+            className="box-border w-full min-w-0 overflow-hidden rounded-[18px] border border-border-aurora bg-surface p-4 sm:p-7"
+          >
+
+            {/* TOP METRICS */}
+
+            <motion.div
+              variants={fadeIn}
+              className="flex w-full min-w-0 items-start justify-between gap-4"
+            >
+              <div className="min-w-0">
+                <p className="text-[8px] text-text-muted sm:text-[9px]">
                   Balance
                 </p>
 
-                <p className="mt-2 font-space text-[27px] font-medium tracking-[-0.03em] text-text-primary">
+                <p className="mt-2 truncate font-space text-[24px] font-medium tracking-[-0.03em] text-text-primary sm:text-[27px]">
                   ₹80,000
                 </p>
               </div>
 
-              <div className="text-right">
-                <p className="text-[9px] text-text-muted">
+              <div className="min-w-0 text-right">
+                <p className="text-[8px] text-text-muted sm:text-[9px]">
                   This month
                 </p>
 
-                <p className="mt-2 font-space text-[19px] font-medium text-text-primary">
+                <p className="mt-2 truncate font-space text-[17px] font-medium text-text-primary sm:text-[19px]">
                   ₹32K
                 </p>
 
@@ -76,21 +122,33 @@ export function Introduction() {
                   Spent
                 </p>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Spending breakdown */}
-            <div className="mt-10 grid grid-cols-[145px_1fr] items-center gap-8">
-              {/* Donut */}
-              <div className="flex justify-center">
+            {/* SPENDING BREAKDOWN */}
+
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportOnce}
+              className="mt-8 grid min-w-0 gap-8 lg:mt-10 lg:grid-cols-[145px_minmax(0,1fr)] lg:items-center"
+            >
+
+              {/* DONUT */}
+
+              <motion.div
+                variants={scaleIn}
+                className="flex justify-center"
+              >
                 <div
-                  className="relative flex h-[138px] w-[138px] items-center justify-center rounded-full"
+                  className="relative flex h-[130px] w-[130px] items-center justify-center rounded-full sm:h-[138px] sm:w-[138px]"
                   style={{
                     background:
                       "conic-gradient(#56C7A0 0deg 202deg, #438D76 202deg 282deg, #72B9AA 282deg 329deg, #263A34 329deg 360deg)",
                   }}
                 >
-                  <div className="flex h-[101px] w-[101px] flex-col items-center justify-center rounded-full bg-surface">
-                    <span className="font-space text-[18px] text-text-primary">
+                  <div className="flex h-[94px] w-[94px] flex-col items-center justify-center rounded-full bg-surface sm:h-[101px] sm:w-[101px]">
+                    <span className="font-space text-[17px] text-text-primary sm:text-[18px]">
                       ₹32K
                     </span>
 
@@ -99,31 +157,42 @@ export function Introduction() {
                     </span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
-              {/* Categories */}
-              <div>
-                <div className="mb-5 flex items-center justify-between">
+              {/* CATEGORIES */}
+
+              <motion.div
+                variants={fadeUp}
+                className="min-w-0"
+              >
+                <div className="mb-5 flex items-center justify-between gap-3">
                   <h3 className="font-space text-[12px] font-semibold text-text-primary">
                     Spending breakdown
                   </h3>
 
-                  <span className="text-[8px] text-text-muted">
+                  <span className="shrink-0 text-[8px] text-text-muted">
                     This month
                   </span>
                 </div>
 
-                <div>
+                <div className="w-full min-w-0">
                   {spending.map((item, index) => (
-                    <div
+                    <motion.div
                       key={item.label}
-                      className={`flex items-center justify-between py-3 ${
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={viewportOnce}
+                      transition={{
+                        duration: 0.45,
+                        delay: index * 0.08,
+                      }}
+                      className={`flex w-full min-w-0 items-center justify-between gap-4 py-3 ${
                         index !== spending.length - 1
                           ? "border-b border-border-aurora"
                           : ""
                       }`}
                     >
-                      <div>
+                      <div className="min-w-0">
                         <p className="text-[10px] text-text-secondary">
                           {item.label}
                         </p>
@@ -133,91 +202,113 @@ export function Introduction() {
                         </p>
                       </div>
 
-                      <span className="font-space text-[10px] text-text-primary">
+                      <span className="shrink-0 font-space text-[10px] text-text-primary">
                         {item.amount}
                       </span>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
-            {/* Money flow */}
-            <div className="mt-8 rounded-[14px] border border-border-aurora bg-background-secondary p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-[11px] font-medium text-text-primary">
+            {/* MONEY FLOW */}
+
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportOnce}
+              className="mt-7 rounded-[14px] border border-border-aurora bg-background-secondary p-4 sm:mt-8 sm:p-5"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-[10px] font-medium text-text-primary sm:text-[11px]">
                   Where your money goes
                 </p>
 
-                <span className="text-[8px] text-text-muted">
+                <span className="shrink-0 text-[7px] text-text-muted sm:text-[8px]">
                   Monthly flow
                 </span>
               </div>
 
               {/* Progress bar */}
-              <div className="mt-5 flex h-3 overflow-hidden rounded-full bg-[#202326]">
-                {/* Needs — 56% */}
-                <div
+
+              <div className="mt-5 flex h-3 w-full overflow-hidden rounded-full bg-[#202326]">
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "56%" }}
+                  viewport={viewportOnce}
+                  transition={{ duration: 0.7, ease: "easeOut" }}
                   className="h-full bg-accent-green"
-                  style={{ width: "56%" }}
                 />
 
-                {/* Wants — 22% */}
-                <div
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "22%" }}
+                  viewport={viewportOnce}
+                  transition={{
+                    duration: 0.7,
+                    delay: 0.1,
+                    ease: "easeOut",
+                  }}
                   className="h-full bg-[#438D76]"
-                  style={{ width: "22%" }}
                 />
 
-                {/* Savings — 22% purple */}
-                <div
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "22%" }}
+                  viewport={viewportOnce}
+                  transition={{
+                    duration: 0.7,
+                    delay: 0.2,
+                    ease: "easeOut",
+                  }}
                   className="h-full bg-accent-primary"
-                  style={{ width: "22%" }}
                 />
               </div>
 
-              {/* Flow labels aligned to bar segments */}
+              {/* Flow labels */}
+
               <div
-                className="mt-4 grid"
+                className="mt-4 grid w-full min-w-0"
                 style={{
                   gridTemplateColumns: "56% 22% 22%",
                 }}
               >
-                {/* Needs */}
-                <div className="text-left">
-                  <p className="text-[8px] text-text-muted">
+                <div className="min-w-0 text-left">
+                  <p className="text-[7px] text-text-muted sm:text-[8px]">
                     Needs
                   </p>
 
-                  <p className="mt-1 font-space text-[11px] text-text-primary">
+                  <p className="mt-1 font-space text-[10px] text-text-primary sm:text-[11px]">
                     56%
                   </p>
                 </div>
 
-                {/* Wants */}
-                <div className="text-left">
-                  <p className="text-[8px] text-text-muted">
+                <div className="min-w-0 text-left">
+                  <p className="text-[7px] text-text-muted sm:text-[8px]">
                     Wants
                   </p>
 
-                  <p className="mt-1 font-space text-[11px] text-text-primary">
+                  <p className="mt-1 font-space text-[10px] text-text-primary sm:text-[11px]">
                     22%
                   </p>
                 </div>
 
-                {/* Savings */}
-                <div className="text-left">
-                  <p className="text-[8px] text-text-muted">
+                <div className="min-w-0 text-left">
+                  <p className="text-[7px] text-text-muted sm:text-[8px]">
                     Savings
                   </p>
 
-                  <p className="mt-1 font-space text-[11px] text-accent-primary">
+                  <p className="mt-1 font-space text-[10px] text-accent-primary sm:text-[11px]">
                     22%
                   </p>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            </motion.div>
+
+          </motion.div>
+        </motion.div>
+
       </div>
     </section>
   );

@@ -6,6 +6,7 @@ import {
   staggerContainer,
   viewportOnce,
 } from "../../lib/motion";
+
 type Allocation = {
   needs: number;
   wants: number;
@@ -107,9 +108,9 @@ export function BudgetAllocator() {
   return (
     <section
       id="allocator"
-      className="border-t border-[#24262A] bg-[#070708]"
+      className="w-full overflow-hidden border-t border-[#24262A] bg-[#070708]"
     >
-      <div className="mx-auto max-w-6xl px-8 py-28">
+      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-8 sm:py-28">
 
         {/* HEADER */}
 
@@ -118,19 +119,19 @@ export function BudgetAllocator() {
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="max-w-[620px]"
+          className="w-full max-w-[620px]"
         >
           <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#777B84]">
             Budget allocator
           </p>
 
-          <h2 className="mt-5 font-space text-[38px] font-medium leading-[1.05] tracking-[-0.04em] text-[#F1F1F2] sm:text-[50px]">
+          <h2 className="mt-5 font-space text-[36px] font-medium leading-[1.05] tracking-[-0.04em] text-[#F1F1F2] sm:text-[50px]">
             Give every rupee
             <br />
             a place.
           </h2>
 
-          <p className="mt-6 max-w-[480px] text-[12px] leading-[1.8] text-[#777B84] sm:text-[13px]">
+          <p className="mt-6 w-full max-w-[480px] break-words text-[12px] leading-[1.8] text-[#777B84] sm:text-[13px]">
             Adjust your budget and see how your money changes
             instantly. Move the sliders to find an allocation
             that feels right for you.
@@ -144,14 +145,14 @@ export function BudgetAllocator() {
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="mt-16 grid overflow-hidden rounded-[22px] border border-[#292B30] bg-[#111214] lg:grid-cols-2"
+          className="mt-12 grid w-full min-w-0 overflow-hidden rounded-[22px] border border-[#292B30] bg-[#111214] sm:mt-16 lg:grid-cols-2"
         >
 
           {/* LEFT — SLIDERS */}
 
           <motion.div
             variants={staggerContainer}
-            className="border-b border-[#292B30] p-7 sm:p-9 lg:border-b-0 lg:border-r"
+            className="min-w-0 border-b border-[#292B30] p-5 sm:p-9 lg:border-b-0 lg:border-r"
           >
 
             {/* MONTHLY INCOME */}
@@ -161,14 +162,14 @@ export function BudgetAllocator() {
                 Monthly income
               </p>
 
-              <p className="mt-3 font-space text-[30px] font-medium tracking-[-0.04em] text-[#F1F1F2]">
+              <p className="mt-3 font-space text-[27px] font-medium tracking-[-0.04em] text-[#F1F1F2] sm:text-[30px]">
                 ₹80,000
               </p>
             </motion.div>
 
             {/* SLIDERS */}
 
-            <div className="mt-12 space-y-8">
+            <div className="mt-10 space-y-7 sm:mt-12 sm:space-y-8">
               {categories.map((category, index) => {
                 const value = allocation[category.key];
 
@@ -184,14 +185,15 @@ export function BudgetAllocator() {
                       duration: 0.5,
                       delay: index * 0.08,
                     }}
+                    className="min-w-0"
                   >
 
                     {/* LABEL */}
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2">
                         <span
-                          className="h-2 w-2 rounded-full"
+                          className="h-2 w-2 shrink-0 rounded-full"
                           style={{
                             backgroundColor: category.color,
                           }}
@@ -206,7 +208,7 @@ export function BudgetAllocator() {
                         key={value}
                         initial={{ opacity: 0.5 }}
                         animate={{ opacity: 1 }}
-                        className="font-space text-[13px] font-semibold text-[#F1F1F2]"
+                        className="shrink-0 font-space text-[13px] font-semibold text-[#F1F1F2]"
                       >
                         {value}%
                       </motion.span>
@@ -214,13 +216,8 @@ export function BudgetAllocator() {
 
                     {/* SLIDER */}
 
-                    <div className="relative mt-5">
-
-                      {/* TRACK */}
-
+                    <div className="relative mt-5 w-full">
                       <div className="absolute left-0 right-0 top-1/2 h-[5px] -translate-y-1/2 rounded-full bg-[#24262A]" />
-
-                      {/* FILLED TRACK */}
 
                       <motion.div
                         animate={{ width: `${value}%` }}
@@ -247,7 +244,7 @@ export function BudgetAllocator() {
                           )
                         }
                         aria-label={`${category.label} allocation`}
-                        className="relative z-10 h-5 w-full cursor-pointer appearance-none bg-transparent"
+                        className="relative z-10 h-6 w-full cursor-pointer appearance-none bg-transparent"
                         style={{
                           accentColor: category.color,
                         }}
@@ -256,13 +253,14 @@ export function BudgetAllocator() {
 
                     {/* RANGE INFORMATION */}
 
-                    <div className="flex justify-between text-[7px] text-[#55585F]">
+                    <div className="flex items-center justify-between gap-2 text-[7px] text-[#55585F]">
                       <span>0%</span>
 
                       <motion.span
                         key={`${category.key}-${amount}`}
                         initial={{ opacity: 0.5 }}
                         animate={{ opacity: 1 }}
+                        className="truncate"
                       >
                         ₹{amount.toLocaleString("en-IN")}
                       </motion.span>
@@ -279,7 +277,7 @@ export function BudgetAllocator() {
 
             <motion.div
               variants={fadeUp}
-              className="mt-10 flex items-center justify-between border-t border-[#292B30] pt-5"
+              className="mt-9 flex items-center justify-between gap-4 border-t border-[#292B30] pt-5 sm:mt-10"
             >
               <span className="text-[9px] text-[#777B84]">
                 Total allocation
@@ -289,7 +287,7 @@ export function BudgetAllocator() {
                 key={totalAllocated}
                 initial={{ opacity: 0.5 }}
                 animate={{ opacity: 1 }}
-                className="font-space text-[11px] font-medium text-[#F1F1F2]"
+                className="shrink-0 font-space text-[11px] font-medium text-[#F1F1F2]"
               >
                 {totalAllocated}%
               </motion.span>
@@ -301,7 +299,7 @@ export function BudgetAllocator() {
 
           <motion.div
             variants={fadeUp}
-            className="flex flex-col justify-center p-7 sm:p-9"
+            className="flex min-w-0 flex-col justify-center p-5 sm:p-9"
           >
 
             <div>
@@ -316,8 +314,8 @@ export function BudgetAllocator() {
 
             {/* DONUT */}
 
-            <div className="mt-10 flex justify-center">
-              <div className="relative h-[220px] w-[220px]">
+            <div className="mt-8 flex justify-center sm:mt-10">
+              <div className="relative h-[190px] w-[190px] sm:h-[220px] sm:w-[220px]">
 
                 <svg
                   viewBox="0 0 220 220"
@@ -419,7 +417,7 @@ export function BudgetAllocator() {
                 {/* CENTER */}
 
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <p className="font-space text-[28px] font-medium tracking-[-0.04em] text-[#F1F1F2]">
+                  <p className="font-space text-[25px] font-medium tracking-[-0.04em] text-[#F1F1F2] sm:text-[28px]">
                     ₹80K
                   </p>
 
@@ -435,24 +433,24 @@ export function BudgetAllocator() {
 
             <motion.div
               variants={staggerContainer}
-              className="mt-10 space-y-4"
+              className="mt-8 space-y-4 sm:mt-10"
             >
 
               {/* NEEDS */}
 
               <motion.div
                 variants={fadeUp}
-                className="flex items-center justify-between"
+                className="flex items-center justify-between gap-4"
               >
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-[#52B788]" />
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-[#52B788]" />
 
                   <span className="text-[10px] text-[#A7ABB4]">
                     Needs
                   </span>
                 </div>
 
-                <div className="text-right">
+                <div className="shrink-0 text-right">
                   <span className="font-space text-[10px] text-[#F1F1F2]">
                     ₹{needsAmount.toLocaleString("en-IN")}
                   </span>
@@ -467,17 +465,17 @@ export function BudgetAllocator() {
 
               <motion.div
                 variants={fadeUp}
-                className="flex items-center justify-between"
+                className="flex items-center justify-between gap-4"
               >
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-[#666CC7]" />
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-[#666CC7]" />
 
                   <span className="text-[10px] text-[#A7ABB4]">
                     Wants
                   </span>
                 </div>
 
-                <div className="text-right">
+                <div className="shrink-0 text-right">
                   <span className="font-space text-[10px] text-[#F1F1F2]">
                     ₹{wantsAmount.toLocaleString("en-IN")}
                   </span>
@@ -492,17 +490,17 @@ export function BudgetAllocator() {
 
               <motion.div
                 variants={fadeUp}
-                className="flex items-center justify-between"
+                className="flex items-center justify-between gap-4"
               >
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-[#7C83FF]" />
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-[#7C83FF]" />
 
                   <span className="text-[10px] text-[#A7ABB4]">
                     Savings
                   </span>
                 </div>
 
-                <div className="text-right">
+                <div className="shrink-0 text-right">
                   <span className="font-space text-[10px] text-[#F1F1F2]">
                     ₹{savingsAmount.toLocaleString("en-IN")}
                   </span>
@@ -518,6 +516,7 @@ export function BudgetAllocator() {
           </motion.div>
 
         </motion.div>
+
       </div>
     </section>
   );
