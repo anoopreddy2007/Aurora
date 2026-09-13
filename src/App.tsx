@@ -31,6 +31,7 @@ import { Footer } from "./components/landing/Footer";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
+import { CursorFollower } from "./components/ui/CursorFollower";
 
 function LandingPage() {
   return (
@@ -137,6 +138,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
+      <CursorFollower />
       <AuthProvider>
         <AppRoutes />
       </AuthProvider>
